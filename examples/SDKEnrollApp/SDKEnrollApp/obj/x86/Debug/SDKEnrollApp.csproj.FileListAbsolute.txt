@@ -1,0 +1,29 @@
+C:\Program Files (x86)\HID Global\Lumidigm Release v6.01.26\SDK\bin\SDKEnrollApp.exe
+C:\Program Files (x86)\HID Global\Lumidigm Release v6.01.26\SDK\bin\SDKEnrollApp.pdb
+C:\Program Files (x86)\HID Global\Lumidigm Release v6.01.26\SDK\examples\SDKEnrollApp\SDKEnrollApp\obj\x86\Debug\SDKEnrollApp.csprojResolveAssemblyReference.cache
+C:\Program Files (x86)\HID Global\Lumidigm Release v6.01.26\SDK\examples\SDKEnrollApp\SDKEnrollApp\obj\x86\Debug\SDKEnrollApp.MainForm.resources
+C:\Program Files (x86)\HID Global\Lumidigm Release v6.01.26\SDK\examples\SDKEnrollApp\SDKEnrollApp\obj\x86\Debug\SDKEnrollApp.Properties.Resources.resources
+C:\Program Files (x86)\HID Global\Lumidigm Release v6.01.26\SDK\examples\SDKEnrollApp\SDKEnrollApp\obj\x86\Debug\SDKEnrollApp.saveDebugForm.resources
+C:\Program Files (x86)\HID Global\Lumidigm Release v6.01.26\SDK\examples\SDKEnrollApp\SDKEnrollApp\obj\x86\Debug\SDKEnrollApp.csproj.GenerateResource.Cache
+C:\Program Files (x86)\HID Global\Lumidigm Release v6.01.26\SDK\examples\SDKEnrollApp\SDKEnrollApp\obj\x86\Debug\SDKEnrollApp.exe
+C:\Program Files (x86)\HID Global\Lumidigm Release v6.01.26\SDK\examples\SDKEnrollApp\SDKEnrollApp\obj\x86\Debug\SDKEnrollApp.pdb
+C:\Users\lenovo\Desktop\SDK\examples\SDKEnrollApp\SDKEnrollApp\obj\x86\Debug\SDKEnrollApp.exe
+C:\Users\lenovo\Desktop\SDK\examples\SDKEnrollApp\SDKEnrollApp\obj\x86\Debug\SDKEnrollApp.pdb
+C:\Users\lenovo\Desktop\SDK2\examples\SDKEnrollApp\SDKEnrollApp\obj\x86\Debug\SDKEnrollApp.exe
+C:\Users\lenovo\Desktop\SDK2\examples\SDKEnrollApp\SDKEnrollApp\obj\x86\Debug\SDKEnrollApp.pdb
+C:\Users\lenovo\Desktop\SDK2\bin\SDKEnrollApp.exe
+C:\Users\lenovo\Desktop\SDK2\bin\SDKEnrollApp.pdb
+C:\Users\lenovo\Desktop\SDK2\examples\SDKEnrollApp\SDKEnrollApp\obj\x86\Debug\SDKEnrollApp.csprojResolveAssemblyReference.cache
+C:\Users\lenovo\Desktop\SDK2\examples\SDKEnrollApp\SDKEnrollApp\obj\x86\Debug\SDKEnrollApp.MainForm.resources
+C:\Users\lenovo\Desktop\SDK2\examples\SDKEnrollApp\SDKEnrollApp\obj\x86\Debug\SDKEnrollApp.Properties.Resources.resources
+C:\Users\lenovo\Desktop\SDK2\examples\SDKEnrollApp\SDKEnrollApp\obj\x86\Debug\SDKEnrollApp.saveDebugForm.resources
+C:\Users\lenovo\Desktop\SDK2\examples\SDKEnrollApp\SDKEnrollApp\obj\x86\Debug\SDKEnrollApp.csproj.GenerateResource.Cache
+F:\Usuarios\David Ortiz\Desktop\SDK2\examples\SDKEnrollApp\SDKEnrollApp\obj\x86\Debug\SDKEnrollApp.exe
+F:\Usuarios\David Ortiz\Desktop\SDK2\examples\SDKEnrollApp\SDKEnrollApp\obj\x86\Debug\SDKEnrollApp.pdb
+F:\Usuarios\David Ortiz\Desktop\SDK2\examples\SDKEnrollApp\SDKEnrollApp\obj\x86\Debug\SDKEnrollApp.csprojResolveAssemblyReference.cache
+F:\Usuarios\David Ortiz\Desktop\SDK2\examples\SDKEnrollApp\SDKEnrollApp\obj\x86\Debug\SDKEnrollApp.MainForm.resources
+F:\Usuarios\David Ortiz\Desktop\SDK2\examples\SDKEnrollApp\SDKEnrollApp\obj\x86\Debug\SDKEnrollApp.Properties.Resources.resources
+F:\Usuarios\David Ortiz\Desktop\SDK2\examples\SDKEnrollApp\SDKEnrollApp\obj\x86\Debug\SDKEnrollApp.csproj.GenerateResource.Cache
+F:\Usuarios\David Ortiz\Desktop\SDK2\bin\SDKEnrollApp.exe.config
+F:\Usuarios\David Ortiz\Desktop\SDK2\bin\SDKEnrollApp.exe
+F:\Usuarios\David Ortiz\Desktop\SDK2\bin\SDKEnrollApp.pdb

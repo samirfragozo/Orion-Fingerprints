@@ -1,0 +1,14 @@
+C:\Program Files (x86)\HID Global\Lumidigm Release v6.01.26\SDK\bin\LumiInOpAPIWrapper.dll
+C:\Program Files (x86)\HID Global\Lumidigm Release v6.01.26\SDK\bin\LumiInOpAPIWrapper.pdb
+C:\Program Files (x86)\HID Global\Lumidigm Release v6.01.26\SDK\examples\SDKEnrollApp\LumiInOpAPIWrapper\LumiInOpAPIWrapper\obj\Debug\LumiInOpAPIWrapper.csprojResolveAssemblyReference.cache
+C:\Program Files (x86)\HID Global\Lumidigm Release v6.01.26\SDK\examples\SDKEnrollApp\LumiInOpAPIWrapper\LumiInOpAPIWrapper\obj\Debug\LumiInOpAPIWrapper.dll
+C:\Program Files (x86)\HID Global\Lumidigm Release v6.01.26\SDK\examples\SDKEnrollApp\LumiInOpAPIWrapper\LumiInOpAPIWrapper\obj\Debug\LumiInOpAPIWrapper.pdb
+C:\Users\lenovo\Desktop\SDK2\bin\LumiInOpAPIWrapper.dll
+C:\Users\lenovo\Desktop\SDK2\bin\LumiInOpAPIWrapper.pdb
+C:\Users\lenovo\Desktop\SDK2\examples\SDKEnrollApp\LumiInOpAPIWrapper\LumiInOpAPIWrapper\obj\Debug\LumiInOpAPIWrapper.csprojResolveAssemblyReference.cache
+C:\Users\lenovo\Desktop\SDK2\examples\SDKEnrollApp\LumiInOpAPIWrapper\LumiInOpAPIWrapper\obj\Debug\LumiInOpAPIWrapper.dll
+C:\Users\lenovo\Desktop\SDK2\examples\SDKEnrollApp\LumiInOpAPIWrapper\LumiInOpAPIWrapper\obj\Debug\LumiInOpAPIWrapper.pdb
+F:\Usuarios\David Ortiz\Desktop\SDK2\bin\LumiInOpAPIWrapper.dll
+F:\Usuarios\David Ortiz\Desktop\SDK2\bin\LumiInOpAPIWrapper.pdb
+F:\Usuarios\David Ortiz\Desktop\SDK2\examples\SDKEnrollApp\LumiInOpAPIWrapper\LumiInOpAPIWrapper\obj\Debug\LumiInOpAPIWrapper.dll
+F:\Usuarios\David Ortiz\Desktop\SDK2\examples\SDKEnrollApp\LumiInOpAPIWrapper\LumiInOpAPIWrapper\obj\Debug\LumiInOpAPIWrapper.pdb

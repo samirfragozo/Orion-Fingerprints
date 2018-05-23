@@ -1,0 +1,13 @@
+C:\Program Files (x86)\HID Global\Lumidigm Release v6.01.26\SDK\bin\SDKWrapper.dll
+C:\Program Files (x86)\HID Global\Lumidigm Release v6.01.26\SDK\bin\SDKWrapper.pdb
+C:\Program Files (x86)\HID Global\Lumidigm Release v6.01.26\SDK\examples\SDKWrapper\obj\Debug\SDKWrapper.dll
+C:\Program Files (x86)\HID Global\Lumidigm Release v6.01.26\SDK\examples\SDKWrapper\obj\Debug\SDKWrapper.pdb
+C:\Users\lenovo\Desktop\SDK2\bin\SDKWrapper.dll
+C:\Users\lenovo\Desktop\SDK2\bin\SDKWrapper.pdb
+C:\Users\lenovo\Desktop\SDK2\examples\SDKWrapper\obj\Debug\SDKWrapper.csprojResolveAssemblyReference.cache
+C:\Users\lenovo\Desktop\SDK2\examples\SDKWrapper\obj\Debug\SDKWrapper.dll
+C:\Users\lenovo\Desktop\SDK2\examples\SDKWrapper\obj\Debug\SDKWrapper.pdb
+F:\Usuarios\David Ortiz\Desktop\SDK2\bin\SDKWrapper.dll
+F:\Usuarios\David Ortiz\Desktop\SDK2\bin\SDKWrapper.pdb
+F:\Usuarios\David Ortiz\Desktop\SDK2\examples\SDKWrapper\obj\Debug\SDKWrapper.dll
+F:\Usuarios\David Ortiz\Desktop\SDK2\examples\SDKWrapper\obj\Debug\SDKWrapper.pdb
