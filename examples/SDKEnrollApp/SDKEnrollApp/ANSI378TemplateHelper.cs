@@ -2,35 +2,35 @@
 
 namespace SDKEnrollApp
 {
-    public class ANSI378TemplateHelper
+    public class Ansi378TemplateHelper
     {
-        private int MAX_LENGTH_POS = 8;
-        private int MINUTIAE_ITEM_SIZE = 6;
-        private byte[] Template;
-        private int TemplateSize;
-        private Minutiae[] MinutiaeList;
+        private int _maxLengthPos = 8;
+        private int _minutiaeItemSize = 6;
+        private byte[] _template;
+        private int _templateSize;
+        private Minutiae[] _minutiaeList;
 
-        public ANSI378TemplateHelper(byte[] template, int templateSize)
+        public Ansi378TemplateHelper(byte[] template, int templateSize)
         {
-            Template = new byte[templateSize];
-            TemplateSize = templateSize;
-            Template = template;
+            _template = new byte[templateSize];
+            _templateSize = templateSize;
+            _template = template;
         }
 
         public Minutiae[] GetMinutiaeList()
         {
-            ExtractANSI378Template();
-            return MinutiaeList;
+            ExtractAnsi378Template();
+            return _minutiaeList;
         }
 
-        private void ExtractANSI378Template()
+        private void ExtractAnsi378Template()
         {
-            int numOfMinutiae = UnsignedByteToInt(Template[GetDataStartPosition()]);
-            MinutiaeList = new Minutiae[numOfMinutiae];
+            int numOfMinutiae = UnsignedByteToInt(_template[GetDataStartPosition()]);
+            _minutiaeList = new Minutiae[numOfMinutiae];
 
             for (int i = 0; i < numOfMinutiae; i++)
             {
-                MinutiaeList[i] = UnpackMinutiaeDataItem(i);
+                _minutiaeList[i] = UnpackMinutiaeDataItem(i);
             }
         }
         public static int UnsignedByteToInt(byte b)
@@ -40,15 +40,15 @@ namespace SDKEnrollApp
 
         private int GetDataStartPosition()
         {
-            int pos = MAX_LENGTH_POS;
-            int templateSize = Template[pos++] << 8;
-            templateSize += Template[pos++];
+            int pos = _maxLengthPos;
+            int templateSize = _template[pos++] << 8;
+            templateSize += _template[pos++];
             if (templateSize == 0)
             {
-                templateSize = (Template[pos] << 24)
-                           + (Template[pos + 1] << 16)
-                           + (Template[pos + 2] << 8)
-                           + Template[pos + 3];
+                templateSize = (_template[pos] << 24)
+                           + (_template[pos + 1] << 16)
+                           + (_template[pos + 2] << 8)
+                           + _template[pos + 3];
                 pos += 4;
             }
             pos += 19;
@@ -59,14 +59,14 @@ namespace SDKEnrollApp
         Minutiae UnpackMinutiaeDataItem(int n)
         {
             Minutiae minutiae = new Minutiae();
-            int pos = GetDataStartPosition() + n * MINUTIAE_ITEM_SIZE + 1;
-            minutiae.nType = (UnsignedByteToInt(Template[pos]) >> 6);
-            minutiae.nX = ((UnsignedByteToInt(Template[pos]) & 0x03f) << 8) + UnsignedByteToInt(Template[pos + 1]);
+            int pos = GetDataStartPosition() + n * _minutiaeItemSize + 1;
+            minutiae.NType = (UnsignedByteToInt(_template[pos]) >> 6);
+            minutiae.NX = ((UnsignedByteToInt(_template[pos]) & 0x03f) << 8) + UnsignedByteToInt(_template[pos + 1]);
             pos += 2;
-            minutiae.nY = ((UnsignedByteToInt(Template[pos]) & 0x03f) << 8) + UnsignedByteToInt(Template[pos + 1]);
+            minutiae.NY = ((UnsignedByteToInt(_template[pos]) & 0x03f) << 8) + UnsignedByteToInt(_template[pos + 1]);
             pos += 2;
-            int angle = UnsignedByteToInt(Template[pos++]) << 1;
-            minutiae.nRotAngle = (angle * Math.PI) / 180;
+            int angle = UnsignedByteToInt(_template[pos++]) << 1;
+            minutiae.NRotAngle = (angle * Math.PI) / 180;
             return minutiae;
         }
     }

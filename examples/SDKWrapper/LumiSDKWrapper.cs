@@ -19,7 +19,7 @@ using System.Text;
 
 namespace SDKWrapper
 {
-    public static class LumiSDKWrapper
+    public static class LumiSdkWrapper
     {
 
 
@@ -30,7 +30,7 @@ namespace SDKWrapper
                                                             int imgNum);
         
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate int LumiAcqStatusCallbackDelegate(LUMI_ACQ_STATUS status);
+        public delegate int LumiAcqStatusCallbackDelegate(LumiAcqStatus status);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate int LumiPresenceDetectCallbackDelegate(IntPtr pImage,
@@ -41,37 +41,37 @@ namespace SDKWrapper
         ////////////////////////////////////////////////////////////////////////
         // LumiAPI functions (C API)
         ////////////////////////////////////////////////////////////////////////        
-        public const string LUMI_API_DLL = "LumiAPI.dll";
+        public const string LumiApiDll = "LumiAPI.dll";
 
         // LumiAPI.dll is loaded in the Main() function of the Program.cs for the 
         // CSharpExample.exe
-        [DllImport(LUMI_API_DLL)]
+        [DllImport(LumiApiDll)]
         public static extern LumiStatus LumiQueryNumberDevices(ref uint nNumDevices,  
-                                                                StringBuilder strIPList);
+                                                                StringBuilder strIpList);
   
-        [DllImport(LUMI_API_DLL)]
+        [DllImport(LumiApiDll)]
         public static extern LumiStatus LumiQueryDevice(uint deviceToQuery, 
-                                                            ref LUMI_DEVICE dev);
+                                                            ref LumiDevice dev);
         
-        [DllImport(LUMI_API_DLL)]
+        [DllImport(LumiApiDll)]
         public static extern LumiStatus LumiInit(uint hDevHandle,
                                                     ref uint hHandle);
 
         
-        [DllImport(LUMI_API_DLL)]
+        [DllImport(LumiApiDll)]
         public static extern LumiStatus LumiGetImageParams(uint hHandle,
                                                     ref uint nWidth,
                                                     ref uint nHeight,
-                                                    ref uint nBPP,
-                                                    ref uint nDPI);
+                                                    ref uint nBpp,
+                                                    ref uint nDpi);
 
-        [DllImport(LUMI_API_DLL)]
+        [DllImport(LumiApiDll)]
         public static extern LumiStatus LumiCapture(uint hHandle, 
                                                     byte[] pOutputImage,
                                                     ref int nSpoof,
                                                     LumiPreviewCallbackDelegate pCallbackFunc);
 
-        [DllImport(LUMI_API_DLL)]
+        [DllImport(LumiApiDll)]
         public static extern LumiStatus LumiCaptureEx(uint hHandle,
                                                     byte[] pOutputImage,
                                                     byte[] pTemplate,
@@ -79,45 +79,45 @@ namespace SDKWrapper
                                                     ref int nSpoof,
                                                     LumiPreviewCallbackDelegate pCallbackFunc);
 
-        [DllImport(LUMI_API_DLL)]
+        [DllImport(LumiApiDll)]
         public static extern LumiStatus LumiSetOption(uint hHandle,
-                                                    LUMI_OPTIONS option,
+                                                    LumiOptions option,
                                                     IntPtr pArgument,
                                                     uint nArgumentSize);
 
-        [DllImport(LUMI_API_DLL)]//new
+        [DllImport(LumiApiDll)]//new
         public static extern LumiStatus LumiSetDCOptions(uint hHandle,
 											   string pFolderToSaveTo,
 											   byte bOverwriteExistingFiles);//byte to make sure its a C++ bool
 
-        [DllImport(LUMI_API_DLL)]//new
+        [DllImport(LumiApiDll)]//new
         public static extern LumiStatus LumiSaveLastCapture(uint hHandle,
 												  string pUserIdentifier,
 												  uint  nFinger,
 												  uint  nInstance);
 
-        [DllImport(LUMI_API_DLL)]//new
+        [DllImport(LumiApiDll)]//new
         public static extern LumiStatus LumiGetQualityMap(uint hHandle, byte[] pQualityMap);
 
-        [DllImport(LUMI_API_DLL)]//new
-        public static extern LumiStatus GetProcessingMode(uint hHandle, ref LUMI_PROCESSING_MODE processingMode);
+        [DllImport(LumiApiDll)]//new
+        public static extern LumiStatus GetProcessingMode(uint hHandle, ref LumiProcessingMode processingMode);
 
-        [DllImport(LUMI_API_DLL)]//new
-        public static extern LumiStatus SetProcessingMode(uint hHandle, LUMI_PROCESSING_MODE processingMode);
+        [DllImport(LumiApiDll)]//new
+        public static extern LumiStatus SetProcessingMode(uint hHandle, LumiProcessingMode processingMode);
 											
-        [DllImport(LUMI_API_DLL)]//new
+        [DllImport(LumiApiDll)]//new
         public static extern LumiStatus LumiDetectFinger(uint hHandle,
-                                               ref LUMI_ACQ_STATUS nStatus, 
+                                               ref LumiAcqStatus nStatus, 
 											   LumiAcqStatusCallbackDelegate func);
 
-        [DllImport(LUMI_API_DLL)]//new
+        [DllImport(LumiApiDll)]//new
         public static extern LumiStatus LumiVerify(uint hHandle,
                                                     byte[] pInputTemplate,
                                                     uint nInputTemplateLength,
                                                     ref int nSpoof,
                                                     ref uint nScore);
 
-        [DllImport(LUMI_API_DLL)]
+        [DllImport(LumiApiDll)]
         public static extern LumiStatus LumiMatch(uint hHandle,
                                                     byte[] pProbeTemplate,
                                                     ref uint nProbeTemplateLength,
@@ -126,48 +126,48 @@ namespace SDKWrapper
                                                     ref uint nMatchScore,
                                                     ref int nSpoofScore);
 
-        [DllImport(LUMI_API_DLL)]//new
+        [DllImport(LumiApiDll)]//new
         public static extern LumiStatus LumiExtract(uint hHandle,
                                                     byte[] pImageBuffer,
                                                     uint nWidth,
                                                     uint nHeight,
-                                                    uint nDPI,
+                                                    uint nDpi,
                                                     byte[] pTemplate,
                                                     ref uint nTemplateLength);
 
         // LumiSetOption declared for the Presence Detection callback funtion.
         // A more generic declaration for LumiSetOption is in LumiSDKSetOption.cs.
 
-        [DllImport(LUMI_API_DLL)]
-        public static extern LumiStatus LumiGetDeviceCaps(uint hHandle, ref LUMI_DEVICE_CAPS dCaps);
+        [DllImport(LumiApiDll)]
+        public static extern LumiStatus LumiGetDeviceCaps(uint hHandle, ref LumiDeviceCaps dCaps);
 
-        [DllImport(LUMI_API_DLL)]//new
-        public static extern LumiStatus LumiGetDeviceState(uint hHandle, ref LUMI_DEVICE_STATE dState);
+        [DllImport(LumiApiDll)]//new
+        public static extern LumiStatus LumiGetDeviceState(uint hHandle, ref LumiDeviceState dState);
 
-        [DllImport(LUMI_API_DLL)]//new
-        public static extern LumiStatus LumiSetLED(uint hHandle, LUMI_LED_CONTROL LED);
+        [DllImport(LumiApiDll)]//new
+        public static extern LumiStatus LumiSetLED(uint hHandle, LumiLedControl led);
 
-        [DllImport(LUMI_API_DLL)]//new
+        [DllImport(LumiApiDll)]//new
         public static extern LumiStatus LumiSnapShot(uint hHandle,
 											         byte[] image,
 											         int exposure,
 											         int gain );
-        [DllImport(LUMI_API_DLL)]//new
+        [DllImport(LumiApiDll)]//new
         public static extern LumiStatus LumiSetLiveMode(uint hHandle, uint mode, LumiPreviewCallbackDelegate pCallbackFunc);
 
-        [DllImport(LUMI_API_DLL)]//new
-        public static extern LumiStatus LumiGetVersionInfo (uint hHandle, ref LUMI_VERSION hVer);
+        [DllImport(LumiApiDll)]//new
+        public static extern LumiStatus LumiGetVersionInfo (uint hHandle, ref LumiVersion hVer);
 
-        [DllImport(LUMI_API_DLL)]
-        public static extern LumiStatus LumiGetConfig(uint hHandle, ref LUMI_CONFIG config);
+        [DllImport(LumiApiDll)]
+        public static extern LumiStatus LumiGetConfig(uint hHandle, ref LumiConfig config);
 
-        [DllImport(LUMI_API_DLL)]
-        public static extern LumiStatus LumiSetConfig(uint hHandle, LUMI_CONFIG config);
+        [DllImport(LumiApiDll)]
+        public static extern LumiStatus LumiSetConfig(uint hHandle, LumiConfig config);
        
-        [DllImport(LUMI_API_DLL)]
+        [DllImport(LumiApiDll)]
         public static extern LumiStatus LumiClose(uint hHandle);
 
-        [DllImport(LUMI_API_DLL)]
+        [DllImport(LumiApiDll)]
         public static extern LumiStatus LumiExit();
 
         ///////////////////////////////////////////////////////////
@@ -178,64 +178,64 @@ namespace SDKWrapper
 
         public enum LumiStatus
         {
-            LUMI_STATUS_OK							= 0,			/* Operation completed successfully */
-	        LUMI_STATUS_ERROR_DEVICE_OPEN			= 0x0001,		/* Could not find or open requested
+            LumiStatusOk							= 0,			/* Operation completed successfully */
+	        LumiStatusErrorDeviceOpen			= 0x0001,		/* Could not find or open requested
 													                biometric reader */
-	        LUMI_STATUS_ERROR_DEVICE_CLOSE			= 0x0002,		/* Could not close biometric reader
+	        LumiStatusErrorDeviceClose			= 0x0002,		/* Could not close biometric reader
 													                or release allocated resources */
-	        LUMI_STATUS_ERROR_CMD_NOT_SUPPORTED		= 0x0004,		/* This command is not supported on
+	        LumiStatusErrorCmdNotSupported		= 0x0004,		/* This command is not supported on
 													                current platform */
-	        LUMI_STATUS_ERROR_COMM_LINK				= 0x0008,		/* General internal communication problem
+	        LumiStatusErrorCommLink				= 0x0008,		/* General internal communication problem
 													                prevented execution of command */
-	        LUMI_STATUS_ERROR_PREPROCESSOR			= 0x0010,		/* Minimum thresholds for processing
+	        LumiStatusErrorPreprocessor			= 0x0010,		/* Minimum thresholds for processing
 													                quality were not achieved */
-	        LUMI_STATUS_ERROR_CALIBRATION			= 0x0020,		/* Calibration cycle failed due to
+	        LumiStatusErrorCalibration			= 0x0020,		/* Calibration cycle failed due to
 													                inoperable hardware state */
-	        LUMI_STATUS_ERROR_BUSY					= 0x0040,		/* Device is busy processing previous
+	        LumiStatusErrorBusy					= 0x0040,		/* Device is busy processing previous
 													                command */
-	        LUMI_STATUS_ERROR_INVALID_PARAMETER		= 0x0080,		/* Parameter or input is out of range */
-	        LUMI_STATUS_ERROR_TIMEOUT				= 0x0100,		/* Event did not occur within programmed
+	        LumiStatusErrorInvalidParameter		= 0x0080,		/* Parameter or input is out of range */
+	        LumiStatusErrorTimeout				= 0x0100,		/* Event did not occur within programmed
 													                time interval */
-	        LUMI_STATUS_ERROR_INVALID_TEMPLATE		= 0x0200,		/* Supplied input template is invalid */
-	        LUMI_STATUS_ERROR_MEMORY_ALLOCATION		= 0x0400,		/* Unable to allocate memory */
-	        LUMI_STATUS_ERROR_INVALID_DEVICE_ID		= 0x0800,		/* Invalid device ID */
-	        LUMI_STATUS_ERROR_INVALID_CONNECTION_ID	= 0x1000,		/* Invalid instance ID */
-            LUMI_STATUS_ERROR_CONFIG_UNSUPPORTED    = 0x2000,		/* Current configuration or policy does not
+	        LumiStatusErrorInvalidTemplate		= 0x0200,		/* Supplied input template is invalid */
+	        LumiStatusErrorMemoryAllocation		= 0x0400,		/* Unable to allocate memory */
+	        LumiStatusErrorInvalidDeviceId		= 0x0800,		/* Invalid device ID */
+	        LumiStatusErrorInvalidConnectionId	= 0x1000,		/* Invalid instance ID */
+            LumiStatusErrorConfigUnsupported    = 0x2000,		/* Current configuration or policy does not
 																    support the function that was just called */
-            LUMI_STATUS_UNSUPPORTED                 = 0x4000,		/* The function is not currently supported by the SDK*/
-            LUMI_STATUS_INTERNAL_ERROR              = 0x8000,		/* An internal error occurred */
-            LUMI_STATUS_INVALID_PARAMETER           = 0x8001,		/* Invalid parameter or non allocated buffer passed to function*/
-            LUMI_STATUS_DEVICE_TIMEOUT              = 0x8002,		/* Biometric sensor is accessed by another process */
-            LUMI_STATUS_INVALID_OPTION              = 0x8004,		/* Invalid option, invalid argument, or invalid
+            LumiStatusUnsupported                 = 0x4000,		/* The function is not currently supported by the SDK*/
+            LumiStatusInternalError              = 0x8000,		/* An internal error occurred */
+            LumiStatusInvalidParameter           = 0x8001,		/* Invalid parameter or non allocated buffer passed to function*/
+            LumiStatusDeviceTimeout              = 0x8002,		/* Biometric sensor is accessed by another process */
+            LumiStatusInvalidOption              = 0x8004,		/* Invalid option, invalid argument, or invalid
 																    argument size passed to function LumiSetOption*/
-            LUMI_STATUS_ERROR_MISSING_SPOOFTPL      = 0x8008,       /* Missing Spoof template from Composite image or ANSI
+            LumiStatusErrorMissingSpooftpl      = 0x8008,       /* Missing Spoof template from Composite image or ANSI
 																    378 Template */
-            LUMI_STATUS_CANCELLED_BY_USER           = 0x8010,		/* If the LumiPresenceDetectCallback returns -2, then
+            LumiStatusCancelledByUser           = 0x8010,		/* If the LumiPresenceDetectCallback returns -2, then
 																    the SDK will return this status code during capture*/
-            LUMI_STATUS_INVALID_FOLDER              = 0x8020,		/* Function LumiSetDCOptions returns this code if the folder
+            LumiStatusInvalidFolder              = 0x8020,		/* Function LumiSetDCOptions returns this code if the folder
 																    doesn't exist */
-            LUMI_STATUS_DC_OPTIONS_NOT_SET          = 0x8040,		/* Function LumiSaveLastCapture returns this code if the
+            LumiStatusDcOptionsNotSet          = 0x8040,		/* Function LumiSaveLastCapture returns this code if the
 																    (Data Collection) option was not set OR set to a non
 																    existing folder */            
-            LUMI_STATUS_INCOMPATIBLE_FIRMWARE       = 0x8080,	    /* The firmware loaded on the sensor is not compatible with
+            LumiStatusIncompatibleFirmware       = 0x8080,	    /* The firmware loaded on the sensor is not compatible with
 															        this version of the SDK. */
-            LUMI_STATUS_NO_DEVICE_FOUND             = 0x8100,		/* LumiInOpAPI returns this code if no device was found*/
-            LUMI_STATUS_ERROR_READ_FILE             = 0x8200,		/* LumiInOpAPI returns this code if could not read from file*/
-            LUMI_STATUS_ERROR_WRITE_FILE            = 0x8400,		/* LumiInOpAPI returns this code if could not write to file*/
-            LUMI_STATUS_INVALID_FILE_FORMAT         = 0x8800,       /* Function LoadBitmapFromFile in LumiInOpAPI returns this 
+            LumiStatusNoDeviceFound             = 0x8100,		/* LumiInOpAPI returns this code if no device was found*/
+            LumiStatusErrorReadFile             = 0x8200,		/* LumiInOpAPI returns this code if could not read from file*/
+            LumiStatusErrorWriteFile            = 0x8400,		/* LumiInOpAPI returns this code if could not write to file*/
+            LumiStatusInvalidFileFormat         = 0x8800,       /* Function LoadBitmapFromFile in LumiInOpAPI returns this 
 															        code if invalid file format is passed. */
-            LUMI_STATUS_ERROR_TIMEOUT_LATENT        = 0x9000,		/* Latent detection on sensor returned time out due to possible latent
+            LumiStatusErrorTimeoutLatent        = 0x9000,		/* Latent detection on sensor returned time out due to possible latent
 															        or finger not moving between capture calls or PD cycles*/
-            LUMI_STATUS_QUALITY_MAP_NOT_GENERATED   = 0x9010,		/* If LumiGetQualityMap is called before a LumiCapture, LumiCaptureEX or
+            LumiStatusQualityMapNotGenerated   = 0x9010,		/* If LumiGetQualityMap is called before a LumiCapture, LumiCaptureEX or
 															        LumiVerify is called, this code returned.  Also, this code is returned if 
 															        a NULL buffer is passed into LumiGetQualityMap.*/
-            LUMI_STATUS_THREAD_ERROR                = 0x9011,		/* More than one thread from same process attempting to enter SDK */
-            LUMI_STATUS_ERROR_SENSOR_COMM_TIMEOUT   = 0x9012,		/* Serious communication error occured with the sensor.  The connection handle
+            LumiStatusThreadError                = 0x9011,		/* More than one thread from same process attempting to enter SDK */
+            LumiStatusErrorSensorCommTimeout   = 0x9012,		/* Serious communication error occured with the sensor.  The connection handle
 															        to that sensor will be closed and no further functions can be called with
 															        that connection handle.*/
-            LUMI_STATUS_DEVICE_STATUS_ERROR = 0x9013,               /* LumiSetOption for the LUMI_OPTION_CHECK_SENSOR_HEALTH option will return
+            LumiStatusDeviceStatusError = 0x9013,               /* LumiSetOption for the LUMI_OPTION_CHECK_SENSOR_HEALTH option will return
 															        this error code if a sensor status error is present.*/
-            LUMI_STATUS_ERROR_BAD_INSTALLATION = 0x9014            /* If Lumidigm SDK files and folders are not in their proper relative paths or missing,
+            LumiStatusErrorBadInstallation = 0x9014            /* If Lumidigm SDK files and folders are not in their proper relative paths or missing,
 														            this error code will be returned.  If the plugin folder is missing, this error
 														            code will be returned.  If the SPM folder is missing, this error is returned.
 														            NOTE: This error code may be returned after the a call to the LumiQueryNumberDevices 
@@ -250,66 +250,66 @@ namespace SDKWrapper
 														            */
         }
 
-        public enum LUMI_PROCESS_LOCATION
+        public enum LumiProcessLocation
         {
-	        LUMI_PROCESS_NONE = 0,
-	        LUMI_PROCESS_SENSOR	= 1,
-	        LUMI_PROCESS_PC	= 2
+	        LumiProcessNone = 0,
+	        LumiProcessSensor	= 1,
+	        LumiProcessPc	= 2
         }
 
         public enum TplInfo
         {
-	        CONF_TPL_DEFAULT			= 0x0000,		/* Template type unknown */
-	        CONF_TPL_NEC_3				= 0x0001,
-	        CONF_TPL_NEC_4				= 0x0002,
-	        CONF_TPL_ANSI378			= 0x0003,
-	        END_TEMPLATES
+	        ConfTplDefault			= 0x0000,		/* Template type unknown */
+	        ConfTplNec3				= 0x0001,
+	        ConfTplNec4				= 0x0002,
+	        ConfTplAnsi378			= 0x0003,
+	        EndTemplates
         }
         /********************************************************/
         /*		Vid Stream	(used with LumiSetLiveMode 			*/
         /********************************************************/
 
-        public const int LUMI_VID_OFF = 0;
-        public const int LUMI_VID_ON = 1;
+        public const int LumiVidOff = 0;
+        public const int LumiVidOn = 1;
 
 
         public enum TransportInfo
         {
-	        CONF_TRANS_DEFAULT	 = 0x0000,
-	        CONF_TRANS_USB       = 0x0001,
-	        CONF_TRANS_ETHERNET  = 0x0002,
-	        CONF_TRANS_RS232	 = 0x0004,
-	        CONF_TRANS_WYGEN     = 0x0008,
-	        CONF_TRANS_END		 = 0xFFFF
+	        ConfTransDefault	 = 0x0000,
+	        ConfTransUsb       = 0x0001,
+	        ConfTransEthernet  = 0x0002,
+	        ConfTransRs232	 = 0x0004,
+	        ConfTransWygen     = 0x0008,
+	        ConfTransEnd		 = 0xFFFF
         }
 
-        public enum LUMI_PRES_DET_THRESH
+        public enum LumiPresDetThresh
         {
-	        LUMI_PD_SENSITIVITY_LOW = 0,
-	        LUMI_PD_SENSITIVITY_MEDIUM,
-	        LUMI_PD_SENSITIVITY_HIGH
+	        LumiPdSensitivityLow = 0,
+	        LumiPdSensitivityMedium,
+	        LumiPdSensitivityHigh
         } 
         
-        public enum LUMI_PRES_DET_MODE
+        public enum LumiPresDetMode
         {
-            LUMI_PD_ON = 0,
-            LUMI_PD_OFF = 1
+            LumiPdOn = 0,
+            LumiPdOff = 1
         }   
 
-        public enum LUMI_OPTIONS
+        public enum LumiOptions
         {
-            LUMI_OPTION_SET_OVERRIDE_HEARTBEAT_DISPLAY = 0,
-            LUMI_OPTION_SET_PRESENCE_DET_MODE = 1,
-            LUMI_OPTION_SET_PRESENCE_DET_THRESH = 2,
-            LUMI_OPTION_SET_ACQ_STATUS_CALLBACK = 3,
-            LUMI_OPTION_SET_PRESENCE_DET_CALLBACK = 4,
-            LUMI_OPTION_SET_PRESENCE_DET_COLOR = 5,
-            LUMI_OPTION_RESET_DEVICE = 6,
-            LUMI_OPTION_CHECK_SENSOR_HEALTH = 7
+            LumiOptionSetOverrideHeartbeatDisplay = 0,
+            LumiOptionSetPresenceDetMode = 1,
+            LumiOptionSetPresenceDetThresh = 2,
+            LumiOptionSetAcqStatusCallback = 3,
+            LumiOptionSetPresenceDetCallback = 4,
+            LumiOptionSetPresenceDetColor = 5,
+            LumiOptionResetDevice = 6,
+            LumiOptionCheckSensorHealth = 7
         }
         
         [StructLayout(LayoutKind.Sequential)]
-        public struct LUMI_DEVICE_CAPS
+        public struct LumiDeviceCaps
         {
             public byte bCaptureImage;          // Represents c++ bool
             public byte bExtract;               // Represents c++ bool
@@ -324,27 +324,27 @@ namespace SDKWrapper
             public uint m_nDPI;
             public uint m_nImageFormat;
             // Process Location
-            public LUMI_PROCESS_LOCATION eProcessLocation;
+            public LumiProcessLocation eProcessLocation;
         }
         
-        public enum LUMI_DEVICE_FLAG
+        public enum LumiDeviceFlag
         {
-	        DEVICE_STATE_UNKNOWN = 0,
-	        DEVICE_STATE_OK,
-	        DEVICE_STATE_BUSY,
-	        DEVICE_STATE_ERROR
+	        DeviceStateUnknown = 0,
+	        DeviceStateOk,
+	        DeviceStateBusy,
+	        DeviceStateError
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct LUMI_DEVICE_STATE
+        public struct LumiDeviceState
         {
-            public LUMI_DEVICE_FLAG eFlag;
+            public LumiDeviceFlag eFlag;
             public uint Device_Temp;
             public uint Trigger_Timeout;
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct LUMI_VERSION
+        public struct LumiVersion
         {
 	        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
             public string sdkVersion;
@@ -355,9 +355,9 @@ namespace SDKWrapper
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
             public string tnsVersion;
         }
-        public enum LUMI_SENSOR_TYPE
+        public enum LumiSensorType
         {
-            VENUS = 0,			/* Venus series sensors		*/
+            Venus = 0,			/* Venus series sensors		*/
             M100 = 1,			/* Mercury M100 sensors		*/
             M300 = 2,			/* Mercury M300 sensors		*/
             M31X = 3,			/* M31X sensors		*/
@@ -367,72 +367,72 @@ namespace SDKWrapper
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct LUMI_DEVICE
+        public struct LumiDevice
         {
             public uint hDevHandle;						            
-            public LUMI_DEVICE_CAPS dCaps;                                
+            public LumiDeviceCaps dCaps;                                
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]   
             public string strIdentifier;
-            public LUMI_SENSOR_TYPE SensorType;
+            public LumiSensorType SensorType;
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct LUMI_CONFIG
+        public struct LumiConfig
         {
             public TplInfo eTemplateType;       
             public TransportInfo eTransInfo; 
             public uint nTriggerTimeout;
         }
 
-        public enum LUMI_LED_CONTROL
+        public enum LumiLedControl
         {
-	        LUMI_JUPITER_LED_00 = 0,
-	        LUMI_JUPITER_LED_01,
-	        LUMI_JUPITER_LED_02,
-	        LUMI_JUPITER_LED_03,
-	        LUMI_JUPITER_LED_04,
-	        LUMI_JUPITER_LED_05,
-	        LUMI_JUPITER_LED_06,
-	        LUMI_JUPITER_LED_07,
-	        LUMI_JUPITER_LED_08,
-	        LUMI_JUPITER_LED_09,
-	        LUMI_JUPITER_LED_10,
-	        LUMI_JUPITER_LED_11,
-	        LUMI_VENUS_ALL_OFF = 1024,
-	        LUMI_VENUS_GREEN_ON,
-	        LUMI_VENUS_GREEN_OFF,
-	        LUMI_VENUS_RED_ON,
-	        LUMI_VENUS_RED_OFF,
-	        LUMI_VENUS_GREEN_CYCLE_ON,
-	        LUMI_VENUS_GREEN_CYCLE_OFF,
-	        LUMI_VENUS_RED_CYCLE_ON,
-	        LUMI_VENUS_RED_CYCLE_OFF
+	        LumiJupiterLed00 = 0,
+	        LumiJupiterLed01,
+	        LumiJupiterLed02,
+	        LumiJupiterLed03,
+	        LumiJupiterLed04,
+	        LumiJupiterLed05,
+	        LumiJupiterLed06,
+	        LumiJupiterLed07,
+	        LumiJupiterLed08,
+	        LumiJupiterLed09,
+	        LumiJupiterLed10,
+	        LumiJupiterLed11,
+	        LumiVenusAllOff = 1024,
+	        LumiVenusGreenOn,
+	        LumiVenusGreenOff,
+	        LumiVenusRedOn,
+	        LumiVenusRedOff,
+	        LumiVenusGreenCycleOn,
+	        LumiVenusGreenCycleOff,
+	        LumiVenusRedCycleOn,
+	        LumiVenusRedCycleOff
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct LUMI_PROCESSING_MODE
+        public struct LumiProcessingMode
         {
 	      public byte bExtract;				/* Turn on or off minutia extraction (true = on, false = off)*/
           public byte bSpoof;				/* Turn on or off spoof	(true = on, false = off)			*/
           public byte bLatent;				/* Turn on or off latent detection (true = on, false = off)	*/
         }
 
-        public enum LUMI_ACQ_STATUS
+        public enum LumiAcqStatus
         {
-	        LUMI_ACQ_DONE = 0,
-	        LUMI_ACQ_PROCESSING_DONE,
-	        LUMI_ACQ_BUSY,
-	        LUMI_ACQ_TIMEOUT,
-	        LUMI_ACQ_NO_FINGER_PRESENT,
-	        LUMI_ACQ_MOVE_FINGER_UP,
-	        LUMI_ACQ_MOVE_FINGER_DOWN,
-	        LUMI_ACQ_MOVE_FINGER_LEFT,
-	        LUMI_ACQ_MOVE_FINGER_RIGHT,
-	        LUMI_ACQ_FINGER_POSITION_OK,
-	        LUMI_ACQ_CANCELLED_BY_USER,
-	        LUMI_ACQ_TIMEOUT_LATENT,
-	        LUMI_ACQ_FINGER_PRESENT,
-	        LUMI_ACQ_NOOP = 99	
+	        LumiAcqDone = 0,
+	        LumiAcqProcessingDone,
+	        LumiAcqBusy,
+	        LumiAcqTimeout,
+	        LumiAcqNoFingerPresent,
+	        LumiAcqMoveFingerUp,
+	        LumiAcqMoveFingerDown,
+	        LumiAcqMoveFingerLeft,
+	        LumiAcqMoveFingerRight,
+	        LumiAcqFingerPositionOk,
+	        LumiAcqCancelledByUser,
+	        LumiAcqTimeoutLatent,
+	        LumiAcqFingerPresent,
+	        LumiAcqNoop = 99	
         }
 
        //typedef unsigned long LUMI_HANDLE;

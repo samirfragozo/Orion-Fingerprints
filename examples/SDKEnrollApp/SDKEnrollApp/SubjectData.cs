@@ -7,38 +7,38 @@ namespace SDKEnrollApp
     public class SubjectData
     {
 
-        public ArrayList fingers;
-        public ArrayList templates;
-        public ArrayList templateLengths;
+        public ArrayList Fingers;
+        public ArrayList Templates;
+        public ArrayList TemplateLengths;
 
         public SubjectData()
         {
-            fingers = new ArrayList();
-            templates = new ArrayList();
-            templateLengths = new ArrayList();
+            Fingers = new ArrayList();
+            Templates = new ArrayList();
+            TemplateLengths = new ArrayList();
         }
-        public void addData(byte[] fingerTemplate, uint fingerTemplateLen, int fingerIndex)
+        public void AddData(byte[] fingerTemplate, uint fingerTemplateLen, int fingerIndex)
         {
-            templates.Add(fingerTemplate);
-            templateLengths.Add(fingerTemplateLen);
-            fingers.Add(fingerIndex);
+            Templates.Add(fingerTemplate);
+            TemplateLengths.Add(fingerTemplateLen);
+            Fingers.Add(fingerIndex);
         }
-        public void deleteData(int fingerIndex)
+        public void DeleteData(int fingerIndex)
         {
             int index;
-            index = fingers.IndexOf(fingerIndex);
+            index = Fingers.IndexOf(fingerIndex);
             if (index >= 0)
             {
-                fingers.RemoveAt(index);
-                templates.RemoveAt(index);
-                templateLengths.RemoveAt(index);
+                Fingers.RemoveAt(index);
+                Templates.RemoveAt(index);
+                TemplateLengths.RemoveAt(index);
             }
         }
-        public void clear()
+        public void Clear()
         {
-            fingers.Clear();
-            templateLengths.Clear();
-            templates.Clear();
+            Fingers.Clear();
+            TemplateLengths.Clear();
+            Templates.Clear();
         }
 
     }

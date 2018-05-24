@@ -4,8 +4,8 @@ namespace SDKEnrollApp
 {
     public class Sensor
     {
-        public uint handle;
-        public LumiSDKWrapper.LUMI_SENSOR_TYPE SensorType;
-        public string strIdentifier;
+        public uint Handle;
+        public LumiSdkWrapper.LumiSensorType SensorType;
+        public string StrIdentifier;
     }
 }

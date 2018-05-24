@@ -15,9 +15,8 @@
 /***************************************************************************************/
 
 using System;
-using System.IO;
+using System.Drawing;
 using System.Runtime.InteropServices;
-using System.Runtime.Serialization.Formatters.Binary;
 using SDKWrapper;
 
 namespace SDKEnrollApp
@@ -26,15 +25,15 @@ namespace SDKEnrollApp
     {
         // Reference to main form used to make syncronous user interface calls
         private readonly MainForm _form;
-        private LumiSDKWrapper.LumiStatus _rc;
+        private LumiSdkWrapper.LumiStatus _rc;
         private string _statusMessage;
         private uint _hHandle;
 
         public Enroll(MainForm form)
         {
             _form = form;
-            Sensor sensorid = (Sensor)_form.SensorList[(int)_form.m_nSelectedSensorID];
-            _hHandle = sensorid.handle;
+            Sensor sensorid = (Sensor)_form._sensorList[(int)_form._nSelectedSensorId];
+            _hHandle = sensorid.Handle;
         }
 
         public void Run()
@@ -42,7 +41,7 @@ namespace SDKEnrollApp
             uint width = 0, height = 0;
             int nSpoof = 0;
             GetWidthAndHeight(ref width, ref height);
-            byte[] snapShot24bpp = new byte[width * height * 3]; // multiply by 3 to get 24bppRgb format
+            byte[] snapShot24Bpp = new byte[width * height * 3]; // multiply by 3 to get 24bppRgb format
             byte[] template1 = new byte[5000]; //array to hold the template
             byte[] template2 = new byte[5000]; //array to hold the template
             byte[] template3 = new byte[5000]; //array to hold the template
@@ -58,104 +57,104 @@ namespace SDKEnrollApp
 
             int nSpoofScore = 0;
 
-            LumiSDKWrapper.LumiPresenceDetectCallbackDelegate del = _form.PresenceDetectionCallback;
+            LumiSdkWrapper.LumiPresenceDetectCallbackDelegate del = _form.PresenceDetectionCallback;
             ////////////////////////////
-            LumiSDKWrapper.LUMI_PROCESSING_MODE processingMode;
+            LumiSdkWrapper.LumiProcessingMode processingMode;
             processingMode.bExtract = 0;
             processingMode.bLatent = 0;
             processingMode.bSpoof = 0;
-            LumiSDKWrapper.LumiStatus pStatus = LumiSDKWrapper.GetProcessingMode(_hHandle, ref processingMode);
-            if (pStatus != LumiSDKWrapper.LumiStatus.LUMI_STATUS_OK)
+            LumiSdkWrapper.LumiStatus pStatus = LumiSdkWrapper.GetProcessingMode(_hHandle, ref processingMode);
+            if (pStatus != LumiSdkWrapper.LumiStatus.LumiStatusOk)
             {
-                _form.Invoke(_form.m_DelegateErrorMessage, "Enrollment failed. Unable to Set the Spoof detection mode", _form.Red);
+                _form.Invoke(_form._delegateErrorMessage, "Enrollment failed. Unable to Set the Spoof detection mode", Color.Red);
                 return;
             }
             
-            processingMode.bSpoof = _form.m_bSpoofEnabled ? (byte) 1 : (byte) 0;
+            processingMode.bSpoof = _form._bSpoofEnabled ? (byte) 1 : (byte) 0;
 
-            pStatus = LumiSDKWrapper.SetProcessingMode(_hHandle, processingMode);
+            pStatus = LumiSdkWrapper.SetProcessingMode(_hHandle, processingMode);
             
-            if (pStatus != LumiSDKWrapper.LumiStatus.LUMI_STATUS_OK)
+            if (pStatus != LumiSdkWrapper.LumiStatus.LumiStatusOk)
             {
-                _form.Invoke(_form.m_DelegateErrorMessage, "Enrollment failed. Unable to Set the Spoof detection mode", _form.Red);
+                _form.Invoke(_form._DelegateErrorMessage, "Enrollment failed. Unable to Set the Spoof detection mode", Color.Red);
                 return;
             }
 
             //////////////////////////////////
-            _form.Invoke(_form.m_DelegateErrorMessage, "Place finger down for first insertion", _form.Blue);
-            if (EnrollAndDisplay(0, snapShot24bpp, template1, ref templateLen1, width, height, ref nSpoof, del) == false)
+            _form.Invoke(_form._DelegateErrorMessage, "Place finger down for first insertion", _form._blue);
+            if (EnrollAndDisplay(0, snapShot24Bpp, template1, ref templateLen1, width, height, ref nSpoof, del) == false)
             {
-                _form.Invoke(_form.m_EnrollThreadFinished);
+                _form.Invoke(_form._EnrollThreadFinished);
                 return;
             }
 
-            if (_form.m_bClosingApp)
+            if (_form._bClosingApp)
             {
                 CloseScanner();
                 return;
             }
 
             /////////////
-            if (_form.m_bSpoofEnabled)
+            if (_form._bSpoofEnabled)
             {
                 if (nSpoof > 1050)
                 {
-                    _form.Invoke(_form.m_DelegateErrorMessage, "Enrollment failed. Please enroll with real finger", _form.Red);
-                    _form.Invoke(_form.m_EnrollThreadFinished);
+                    _form.Invoke(_form._DelegateErrorMessage, "Enrollment failed. Please enroll with real finger", Color.Red);
+                    _form.Invoke(_form._EnrollThreadFinished);
                     return;
                 }
             }
 
             // Force Finger Lift between enrollment insertions
-            _form.Invoke(_form.m_DelegateErrorMessage, "Please lift finger and place again", _form.Red);
+            _form.Invoke(_form._DelegateErrorMessage, "Please lift finger and place again", Color.Red);
             ForceFingerLift();
 
-            _form.Invoke(_form.m_DelegateErrorMessage, "Place finger down for second insertion", _form.Blue);
-            if (EnrollAndDisplay(1, snapShot24bpp, template2, ref templateLen2, width, height, ref nSpoof, del) == false)
+            _form.Invoke(_form._DelegateErrorMessage, "Place finger down for second insertion", _form._blue);
+            if (EnrollAndDisplay(1, snapShot24Bpp, template2, ref templateLen2, width, height, ref nSpoof, del) == false)
             {
-                _form.Invoke(_form.m_EnrollThreadFinished);
+                _form.Invoke(_form._EnrollThreadFinished);
                 return;
             }
 
-            if (_form.m_bClosingApp)
+            if (_form._bClosingApp)
             {
                 CloseScanner();
                 return;
             }
 
-            if (_form.m_bSpoofEnabled)
+            if (_form._bSpoofEnabled)
             {
                 if (nSpoof > 1050)
                 {
-                    _form.Invoke(_form.m_DelegateErrorMessage, "Enrollment failed. Please enroll with real finger", _form.Red);
-                    _form.Invoke(_form.m_EnrollThreadFinished);
+                    _form.Invoke(_form._DelegateErrorMessage, "Enrollment failed. Please enroll with real finger", Color.Red);
+                    _form.Invoke(_form._EnrollThreadFinished);
                     return;
                 }
             }
 
             // Force Finger Lift between enrollment insertions
-            _form.Invoke(_form.m_DelegateErrorMessage, "Please lift finger and place again", _form.Red);            
+            _form.Invoke(_form._DelegateErrorMessage, "Please lift finger and place again", Color.Red);            
             ForceFingerLift();
 
-            _form.Invoke(_form.m_DelegateErrorMessage, "Place finger down for third insertion", _form.Blue);
-            if (EnrollAndDisplay(2, snapShot24bpp, template3, ref templateLen3, width, height, ref nSpoof, del) == false)
+            _form.Invoke(_form._DelegateErrorMessage, "Place finger down for third insertion", _form._blue);
+            if (EnrollAndDisplay(2, snapShot24Bpp, template3, ref templateLen3, width, height, ref nSpoof, del) == false)
             {
-                _form.Invoke(_form.m_EnrollThreadFinished);
+                _form.Invoke(_form._EnrollThreadFinished);
                 return;
             }
 
-            if (_form.m_bClosingApp)
+            if (_form._bClosingApp)
             {
                 CloseScanner();
                 return;
             }
 
-            if (_form.m_bSpoofEnabled)
+            if (_form._bSpoofEnabled)
             {
                 if (nSpoof > 1050)
                 {
-                    _form.Invoke(_form.m_DelegateErrorMessage, "Enrollment failed. Please enroll with real finger", _form.Red);
-                    _form.Invoke(_form.m_EnrollThreadFinished);
+                    _form.Invoke(_form._DelegateErrorMessage, "Enrollment failed. Please enroll with real finger", Color.Red);
+                    _form.Invoke(_form._EnrollThreadFinished);
                     return;
                 }
 
@@ -165,10 +164,10 @@ namespace SDKEnrollApp
             /*
             LumiSDKWrapper.LumiMatch(_hHandle, template2, ref templateLen2, template3, ref templateLen3, ref nMatchScore2, ref nSpoofScore);
 
-            if (nMatchScore2 < _form.m_MatchThreshold)
+            if (nMatchScore2 < _form._MatchThreshold)
             {
-                _form.Invoke(_form.m_DelegateErrorMessage, "Enrollment failed. Please use the same finger for enrollment", _form.Red);
-                _form.Invoke(_form.m_EnrollThreadFinished);
+                _form.Invoke(_form._DelegateErrorMessage, "Enrollment failed. Please use the same finger for enrollment", _form.Red);
+                _form.Invoke(_form._EnrollThreadFinished);
                 return;
             }
             LumiSDKWrapper.LumiMatch(_hHandle, template1, ref templateLen1, template3, ref templateLen3, ref nMatchScore3, ref nSpoofScore);
@@ -176,17 +175,17 @@ namespace SDKEnrollApp
             FileStream stream;
             BinaryFormatter bformatter = new BinaryFormatter();
 
-            if (_form.m_newSubjID)
+            if (_form._newSubjID)
             {
-                stream = File.Create(_form.m_sFolderPath + "\\Database\\" + _form.m_sEnrollSubjID + ".bin");              
+                stream = File.Create(_form._sFolderPath + "\\Database\\" + _form._sEnrollSubjID + ".bin");              
             }
             else
             {
-                stream = File.Open(_form.m_sFolderPath + "\\Database\\" + _form.m_sEnrollSubjID + ".bin", FileMode.Open);                
+                stream = File.Open(_form._sFolderPath + "\\Database\\" + _form._sEnrollSubjID + ".bin", FileMode.Open);                
             }
 
 
-            _form.m_currentSubject.deleteData(_form.m_CurrentHotSpot);
+            _form._currentSubject.deleteData(_form._CurrentHotSpot);
             
             if(nMatchScore1>nMatchScore2)
             {
@@ -194,19 +193,19 @@ namespace SDKEnrollApp
                 {
                     if (nMatchScore2 > nMatchScore3)
                     {
-                        _form.m_currentSubject.addData(template2, templateLen2, _form.m_CurrentHotSpot);
+                        _form._currentSubject.addData(template2, templateLen2, _form._CurrentHotSpot);
                       
                     }
                     else
                     {
-                        _form.m_currentSubject.addData(template1, templateLen1, _form.m_CurrentHotSpot);
+                        _form._currentSubject.addData(template1, templateLen1, _form._CurrentHotSpot);
 
                     }
 
                 }
                 else
                 {
-                    _form.m_currentSubject.addData(template1, templateLen1, _form.m_CurrentHotSpot);
+                    _form._currentSubject.addData(template1, templateLen1, _form._CurrentHotSpot);
                 }   
             		
             }
@@ -216,26 +215,26 @@ namespace SDKEnrollApp
                 {
                     if (nMatchScore1 > nMatchScore3)
                     {
-                        _form.m_currentSubject.addData(template2, templateLen2, _form.m_CurrentHotSpot);
+                        _form._currentSubject.addData(template2, templateLen2, _form._CurrentHotSpot);
                     }
                     else
                     {
-                        _form.m_currentSubject.addData(template3, templateLen3, _form.m_CurrentHotSpot);
+                        _form._currentSubject.addData(template3, templateLen3, _form._CurrentHotSpot);
                     }
                 }
                 else
                 {
-                    _form.m_currentSubject.addData(template3, templateLen3, _form.m_CurrentHotSpot);
+                    _form._currentSubject.addData(template3, templateLen3, _form._CurrentHotSpot);
                 }   
 
             }
 
-            bformatter.Serialize(stream, _form.m_currentSubject);
+            bformatter.Serialize(stream, _form._currentSubject);
             stream.Close();*/
 
-            _form.Invoke(_form.m_DelegateErrorMessage, "Enrollment successful", _form.Blue);
+            _form.Invoke(_form._DelegateErrorMessage, "Enrollment successful", _form._blue);
 
-            _form.Invoke(_form.m_EnrollThreadFinished);
+            _form.Invoke(_form._EnrollThreadFinished);
 
         }
 
@@ -243,9 +242,9 @@ namespace SDKEnrollApp
         {
             try
             {
-                uint nBPP = 0, nDPI = 0;
-                _rc = LumiSDKWrapper.LumiGetImageParams(_hHandle, ref width, ref height, ref nBPP, ref nDPI);
-                if (_rc != LumiSDKWrapper.LumiStatus.LUMI_STATUS_OK)
+                uint nBpp = 0, nDpi = 0;
+                _rc = LumiSdkWrapper.LumiGetImageParams(_hHandle, ref width, ref height, ref nBpp, ref nDpi);
+                if (_rc != LumiSdkWrapper.LumiStatus.LumiStatusOk)
                 {
                     throw new Exception("FAIL: lumiGetImageSize");
                 }
@@ -261,7 +260,7 @@ namespace SDKEnrollApp
             finally { }
         }
 
-        public LumiSDKWrapper.LumiStatus EnrollImage(byte[] snapShot, byte[] snapShot24bppPointer, byte[] template1Pointer, ref uint templateSize, uint width, uint height, ref int spoof, LumiSDKWrapper.LumiPresenceDetectCallbackDelegate callbackFunc, ref uint nNFIQ)
+        public LumiSdkWrapper.LumiStatus EnrollImage(byte[] snapShot, byte[] snapShot24BppPointer, byte[] template1Pointer, ref uint templateSize, uint width, uint height, ref int spoof, LumiSdkWrapper.LumiPresenceDetectCallbackDelegate callbackFunc, ref uint nNfiq)
         {
             try
             {
@@ -272,23 +271,23 @@ namespace SDKEnrollApp
                 // static method on the object LumiSDKLumiSetOption.  This is because the LumiSDKWrapper
                 // has the LumiSetOption defined to take the LumiPresenceDetectCallbackDelegate argument while for
                 // setting PD mode, we need it to take an integer pointer argument instead.
-                if (_form.m_bSensorTriggerArmed)
+                if (_form._bSensorTriggerArmed)
                 {
-                    LumiSDKLumiSetOption.SetPresenceDetectionMode(_hHandle, LumiSDKWrapper.LUMI_PRES_DET_MODE.LUMI_PD_ON);
+                    LumiSdkLumiSetOption.SetPresenceDetectionMode(_hHandle, LumiSdkWrapper.LumiPresDetMode.LumiPdOn);
                 }
                 else
                 {
-                    LumiSDKLumiSetOption.SetPresenceDetectionMode(_hHandle, LumiSDKWrapper.LUMI_PRES_DET_MODE.LUMI_PD_OFF);
+                    LumiSdkLumiSetOption.SetPresenceDetectionMode(_hHandle, LumiSdkWrapper.LumiPresDetMode.LumiPdOff);
                 }
 
                 // Set the address of the presence detection callback function   
                 IntPtr prtDel = Marshal.GetFunctionPointerForDelegate(callbackFunc);
-                _rc = LumiSDKWrapper.LumiSetOption(_hHandle, LumiSDKWrapper.LUMI_OPTIONS.LUMI_OPTION_SET_PRESENCE_DET_CALLBACK, prtDel, (uint)IntPtr.Size);
-                _rc = LumiSDKWrapper.LumiSetDCOptions(_hHandle, _form.m_debugFolder, 0);
-                _rc = LumiSDKWrapper.LumiCaptureEx(_hHandle, snapShot, template1Pointer, ref templateSize, ref spoof, null);
+                _rc = LumiSdkWrapper.LumiSetOption(_hHandle, LumiSdkWrapper.LumiOptions.LumiOptionSetPresenceDetCallback, prtDel, (uint)IntPtr.Size);
+                _rc = LumiSdkWrapper.LumiSetDCOptions(_hHandle, _form._debugFolder, 0);
+                _rc = LumiSdkWrapper.LumiCaptureEx(_hHandle, snapShot, template1Pointer, ref templateSize, ref spoof, null);
                 
 
-                if (_rc != LumiSDKWrapper.LumiStatus.LUMI_STATUS_OK)
+                if (_rc != LumiSdkWrapper.LumiStatus.LumiStatusOk)
                 {
                     return _rc;
                 }
@@ -297,11 +296,11 @@ namespace SDKEnrollApp
                     _statusMessage += "PASS: lumiCaptureProcess rc = " + _rc + " spoof = " + spoof + "\r\n";
                 }
 
-                GetNISTScore(snapShot, ref nNFIQ);
+                GetNistScore(snapShot, ref nNfiq);
 
-                LumiSDKWrapper.LumiSetOption(_hHandle, LumiSDKWrapper.LUMI_OPTIONS.LUMI_OPTION_SET_PRESENCE_DET_CALLBACK, IntPtr.Zero, (uint)IntPtr.Size); // size of int is 4
+                LumiSdkWrapper.LumiSetOption(_hHandle, LumiSdkWrapper.LumiOptions.LumiOptionSetPresenceDetCallback, IntPtr.Zero, (uint)IntPtr.Size); // size of int is 4
 
-                ConvertRawImageTo24bpp(snapShot24bppPointer, snapShot, snapShot.Length);
+                ConvertRawImageTo24Bpp(snapShot24BppPointer, snapShot, snapShot.Length);
 
                 return _rc;
             }
@@ -313,35 +312,35 @@ namespace SDKEnrollApp
             finally { }
         }
 
-        public void ConvertRawImageTo24bpp(byte[] snapShot24bppPointer, byte[] snapshotPointer, int snapShotLength)
+        public void ConvertRawImageTo24Bpp(byte[] snapShot24BppPointer, byte[] snapshotPointer, int snapShotLength)
         {
             int innerOffset = 0;
             for (int offset = 0; offset < snapShotLength; offset++)
             {
                 for (int counter = 1; counter <= 3; counter++)
                 {
-                    snapShot24bppPointer[innerOffset] = snapshotPointer[offset];
+                    snapShot24BppPointer[innerOffset] = snapshotPointer[offset];
                     innerOffset += 1;
                 }
             }
         }
-        public void GetNISTScore(byte[] pImage, ref uint nNFIQ)
+        public void GetNistScore(byte[] pImage, ref uint nNfiq)
         {
-            uint nBPP = 0, nDPI = 0;
+            uint nBpp = 0, nDpi = 0;
             uint nWidth = 0;
             uint nHeight = 0;
 
-            _rc = LumiSDKWrapper.LumiGetImageParams(_hHandle, ref nWidth, ref nHeight, ref nBPP, ref nDPI);
-            LumiInOpAPIWrapper.LumiInOpAPIWrapper.LumiStatus rc;
-            rc = LumiInOpAPIWrapper.LumiInOpAPIWrapper.LumiComputeNFIQFromImage(pImage, nWidth, nHeight, nBPP, nDPI, ref nNFIQ);
+            _rc = LumiSdkWrapper.LumiGetImageParams(_hHandle, ref nWidth, ref nHeight, ref nBpp, ref nDpi);
+            LumiInOpAPIWrapper.LumiInOpApiWrapper.LumiStatus rc;
+            rc = LumiInOpAPIWrapper.LumiInOpApiWrapper.LumiComputeNFIQFromImage(pImage, nWidth, nHeight, nBpp, nDpi, ref nNfiq);
 
         }
         public void CloseScanner()
         {
             try
             {
-                _rc = LumiSDKWrapper.LumiClose(_hHandle);
-                _rc = LumiSDKWrapper.LumiExit();
+                _rc = LumiSdkWrapper.LumiClose(_hHandle);
+                _rc = LumiSdkWrapper.LumiExit();
             }
             catch (Exception err)
             {
@@ -350,58 +349,58 @@ namespace SDKEnrollApp
             }
             finally { }
         }
-        public bool EnrollAndDisplay(int nEnrollmentCaptureIndex, byte[] snapShot24bppPointer, byte[] template1Pointer, ref uint templateSize, uint width, uint height, ref int nSpoof, LumiSDKWrapper.LumiPresenceDetectCallbackDelegate callbackFunc)
+        public bool EnrollAndDisplay(int nEnrollmentCaptureIndex, byte[] snapShot24BppPointer, byte[] template1Pointer, ref uint templateSize, uint width, uint height, ref int nSpoof, LumiSdkWrapper.LumiPresenceDetectCallbackDelegate callbackFunc)
         {
-            uint nNFIQ = 0;
+            uint nNfiq = 0;
             byte[] snapShot = new byte[width * height];
-            LumiSDKWrapper.LumiStatus Status = EnrollImage(snapShot, snapShot24bppPointer, template1Pointer, ref templateSize, width, height, ref nSpoof, callbackFunc, ref nNFIQ);
+            LumiSdkWrapper.LumiStatus status = EnrollImage(snapShot, snapShot24BppPointer, template1Pointer, ref templateSize, width, height, ref nSpoof, callbackFunc, ref nNfiq);
  
-            if (_form.m_bClosingApp)
+            if (_form._bClosingApp)
             {
                 CloseScanner();
                 return false;
             }
             
-            if (_form.m_bNISTQuality)
+            if (_form._bNISTQuality)
             {
-                _form.Invoke(_form.m_DelegateNISTStatus, "NIST Quality = " + nNFIQ, _form.Blue);
-                _form.Invoke(_form.m_DelegateSetNISTImage, nNFIQ);
+                _form.Invoke(_form._DelegateNISTStatus, "NIST Quality = " + nNfiq, _form._blue);
+                _form.Invoke(_form._DelegateSetNISTImage, nNfiq);
 
             }
             else
             {
-                _form.Invoke(_form.m_DelegateNISTStatus, "", _form.Blue);
+                _form.Invoke(_form._DelegateNISTStatus, "", _form._blue);
             }
 
-            if (Status == LumiSDKWrapper.LumiStatus.LUMI_STATUS_CANCELLED_BY_USER)
+            if (status == LumiSdkWrapper.LumiStatus.LumiStatusCancelledByUser)
             {
-                _form.Invoke(_form.m_DelegateCaptureCancelled);
-                _form.Invoke(_form.m_DelegateErrorMessage, "Enroll Cancelled by User", _form.Red);
+                _form.Invoke(_form._DelegateCaptureCancelled);
+                _form.Invoke(_form._DelegateErrorMessage, "Enroll Cancelled by User", Color.Red);
                 return false;
             }
 
-            if (Status == LumiSDKWrapper.LumiStatus.LUMI_STATUS_ERROR_TIMEOUT)
+            if (status == LumiSdkWrapper.LumiStatus.LumiStatusErrorTimeout)
             {
-                _form.Invoke(_form.m_DelegateCaptureTimeOut);
-                _form.Invoke(_form.m_DelegateErrorMessage, "Sensor Time Out. ", _form.Red);
+                _form.Invoke(_form._DelegateCaptureTimeOut);
+                _form.Invoke(_form._DelegateErrorMessage, "Sensor Time Out. ", Color.Red);
 
                 return false;
             }
-            if (Status == LumiSDKWrapper.LumiStatus.LUMI_STATUS_ERROR_TIMEOUT_LATENT)
+            if (status == LumiSdkWrapper.LumiStatus.LumiStatusErrorTimeoutLatent)
             {
-                _form.Invoke(_form.m_DelegateCaptureTimeOut);
-                _form.Invoke(_form.m_DelegateErrorMessage, "Sensor Latent Time Out.\nPlease lift the finger and then place again", _form.Red);
+                _form.Invoke(_form._DelegateCaptureTimeOut);
+                _form.Invoke(_form._DelegateErrorMessage, "Sensor Latent Time Out.\nPlease lift the finger and then place again", Color.Red);
                 return false;
             }
-            if (Status == LumiSDKWrapper.LumiStatus.LUMI_STATUS_ERROR_SENSOR_COMM_TIMEOUT)
+            if (status == LumiSdkWrapper.LumiStatus.LumiStatusErrorSensorCommTimeout)
             {
-                _form.m_bComTimeOut = true;
-                _form.Invoke(_form.m_DelegateComTimeOut);
-                _form.Invoke(_form.m_DelegateErrorMessage, "Sensor Communication Time Out.\n Please re-connect the device and restart the application", _form.Red);
+                _form._bComTimeOut = true;
+                _form.Invoke(_form._DelegateComTimeOut);
+                _form.Invoke(_form._DelegateErrorMessage, "Sensor Communication Time Out.\n Please re-connect the device and restart the application", Color.Red);
                 return false;
             }
 
-            _form.Invoke(_form.m_DelegateSetImage, snapShot, snapShot24bppPointer, width, height, template1Pointer, templateSize, nEnrollmentCaptureIndex);
+            _form.Invoke(_form._DelegateSetImage, snapShot, snapShot24BppPointer, width, height, template1Pointer, templateSize, nEnrollmentCaptureIndex);
             GC.KeepAlive(callbackFunc);
 
             return true;
@@ -409,13 +408,13 @@ namespace SDKEnrollApp
 
         public void ForceFingerLift()
         {
-            LumiSDKWrapper.LumiAcqStatusCallbackDelegate del = _form.AcquStatusCallback;
+            LumiSdkWrapper.LumiAcqStatusCallbackDelegate del = _form.AcquStatusCallback;
 
-            LumiSDKWrapper.LUMI_ACQ_STATUS nStatus = LumiSDKWrapper.LUMI_ACQ_STATUS.LUMI_ACQ_BUSY;
+            LumiSdkWrapper.LumiAcqStatus nStatus = LumiSdkWrapper.LumiAcqStatus.LumiAcqBusy;
 
-            LumiSDKWrapper.LumiStatus rc = LumiSDKWrapper.LumiDetectFinger(_hHandle, ref nStatus, del);
+            LumiSdkWrapper.LumiStatus rc = LumiSdkWrapper.LumiDetectFinger(_hHandle, ref nStatus, del);
 
-            if (rc != LumiSDKWrapper.LumiStatus.LUMI_STATUS_OK)
+            if (rc != LumiSdkWrapper.LumiStatus.LumiStatusOk)
             {
             }
         }

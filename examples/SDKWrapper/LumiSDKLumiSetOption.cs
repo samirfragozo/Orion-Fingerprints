@@ -17,34 +17,34 @@ using System.Runtime.InteropServices;
 
 namespace SDKWrapper
 {
-    public static class LumiSDKLumiSetOption
+    public static class LumiSdkLumiSetOption
     {
         // LumiAPI.dll is loaded in the Main() function of the Program.cs for the 
         // CSharpExample.exe
         // LumiSetOption declared for the Override trigger int pointer
-        [DllImport(LumiSDKWrapper.LUMI_API_DLL)]
-        static extern LumiSDKWrapper.LumiStatus LumiSetOption(uint hHandle,
-                                                    LumiSDKWrapper.LUMI_OPTIONS option,
+        [DllImport(LumiSdkWrapper.LumiApiDll)]
+        static extern LumiSdkWrapper.LumiStatus LumiSetOption(uint hHandle,
+                                                    LumiSdkWrapper.LumiOptions option,
                                                     ref int pArgument,
                                                     uint nArgumentSize);
 
-        public static LumiSDKWrapper.LumiStatus OverrideTrigger(uint handle, bool overrideTrigger)
+        public static LumiSdkWrapper.LumiStatus OverrideTrigger(uint handle, bool overrideTrigger)
         {
             int argument = 0;
             if (overrideTrigger) argument = 1;
-            return LumiSetOption(handle, LumiSDKWrapper.LUMI_OPTIONS.LUMI_OPTION_SET_OVERRIDE_HEARTBEAT_DISPLAY, ref argument, sizeof(int));  
+            return LumiSetOption(handle, LumiSdkWrapper.LumiOptions.LumiOptionSetOverrideHeartbeatDisplay, ref argument, sizeof(int));  
         }
 
-        public static LumiSDKWrapper.LumiStatus SetPresenceDetectionMode(uint handle, LumiSDKWrapper.LUMI_PRES_DET_MODE pdMode)
+        public static LumiSdkWrapper.LumiStatus SetPresenceDetectionMode(uint handle, LumiSdkWrapper.LumiPresDetMode pdMode)
         {
             int argument = (int)pdMode;
-            return LumiSetOption(handle, LumiSDKWrapper.LUMI_OPTIONS.LUMI_OPTION_SET_PRESENCE_DET_MODE, ref argument, sizeof(int));  
+            return LumiSetOption(handle, LumiSdkWrapper.LumiOptions.LumiOptionSetPresenceDetMode, ref argument, sizeof(int));  
         }
 
-        public static LumiSDKWrapper.LumiStatus SetPresenceDetectionThreshold(uint handle, LumiSDKWrapper.LUMI_PRES_DET_THRESH thresh)
+        public static LumiSdkWrapper.LumiStatus SetPresenceDetectionThreshold(uint handle, LumiSdkWrapper.LumiPresDetThresh thresh)
         {
             int argument = (int)thresh;
-            return LumiSetOption(handle, LumiSDKWrapper.LUMI_OPTIONS.LUMI_OPTION_SET_PRESENCE_DET_THRESH, ref argument, sizeof(int)); 
+            return LumiSetOption(handle, LumiSdkWrapper.LumiOptions.LumiOptionSetPresenceDetThresh, ref argument, sizeof(int)); 
         }
     }
 }

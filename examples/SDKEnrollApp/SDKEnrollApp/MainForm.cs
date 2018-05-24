@@ -3,9 +3,7 @@ using System.Collections;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
@@ -19,12 +17,12 @@ namespace SDKEnrollApp
     public delegate void SetImageDelegate(ref byte[] snapShotRaw, ref byte[] snapShot, uint width, uint height, byte[] pTemplate, uint nTempSz, int nEnrollmentCaptureIndex);
     public delegate void DelegateCaptureThreadFinished();
     public delegate void DelegateVerifyThreadFinished();
-    public delegate void DelegateCaptureWithPDCancelled();
+    public delegate void DelegateCaptureWithPdCancelled();
     public delegate void DelegateCaptureTimeOut();
     public delegate void DelegateComTimeOut();
     public delegate void DelegateLatentDetected();
     public delegate void WriteResultsDelegate(string text, Color txtColor);
-    public delegate void SetNISTImageDelegate(uint nistQauality);
+    public delegate void SetNistImageDelegate(uint nistQauality);
     public delegate void PreviewLiveMode(IntPtr pImage, int width, int height, int imgnum);
 
     //typedef int (*LumiAcqStatusCallback)(uint nStatus);
@@ -34,10 +32,10 @@ namespace SDKEnrollApp
     {
         M30X,
         V30X,
-        V30X_ID,
+        V30XId,
         M31X,
         V31X,
-        UNKNOWN
+        Unknown
     }
 
     public partial class MainForm : Form
@@ -51,54 +49,52 @@ namespace SDKEnrollApp
         private int _numberDpi;
         private int _numberUmbral;
 
-        public Config m_config;
-        public XmlSerializer serializer;
-        public uint m_nSelectedSensorID;
-        public ArrayList SensorList = new ArrayList();
-        public bool m_bClosingApp;
-        public bool m_bStayInCapture;
-        public string m_sFolderPath;
-        public string m_debugFolder;
-        public Color Red = Color.FromArgb(222, 56, 49);
-        public Color Blue = Color.FromArgb(0, 63, 114);
-        Thread m_CaptureWithPDThread;
-        Thread m_EnrollThread;
-        Thread m_VerifyThread;
-        public SetImageDelegate m_DelegateSetImage;
-        public DelegateCaptureThreadFinished m_CaptureThreadFinished;
-        public DelegateVerifyThreadFinished m_VerifyThreadFinished;
-        public DelegateCaptureThreadFinished m_EnrollThreadFinished;
-        public WriteResultsDelegate m_DelegateErrorMessage;
-        public SetNISTImageDelegate m_DelegateSetNISTImage;
-        public WriteResultsDelegate m_DelegateNISTStatus;
-        public DelegateCaptureWithPDCancelled m_DelegateCaptureCancelled;
-        public DelegateCaptureTimeOut m_DelegateCaptureTimeOut;
-        public DelegateComTimeOut m_DelegateComTimeOut;
-        public DelegateLatentDetected m_DelegateLatentDetected;
-        public PreviewLiveMode m_DelegatePreviewLiveMode;
-        private bool m_bPDCaptureInProcess;
-        private bool m_bCancelCapture;
-        public bool m_bSensorTriggerArmed;
-        public bool m_bSpoofEnabled;
-        public uint m_MatchThreshold;
-        public uint m_SpoofThreshold;
-        public bool m_SpoofThreshold_HighlySecured;
-        public bool m_SpoofThreshold_Secured;
-        public bool m_MatchThreshold_Convenient;
-        public bool m_MatchThreshold_HighlySecured;
-        public bool m_MatchThreshold_Secured;
-        public bool m_SpoofThreshold_Convenient;
-        public bool m_bDevicePresent;
-        public bool m_bNISTQuality;
-        public bool m_bCancelLiveMode;
-        public bool m_bLiveModeinProcess;
-        public string m_sEnrollSubjID;
-        public bool m_newSubjID;
-        public bool m_bComTimeOut;
-        public bool m_bLatentDetected;
-        public SubjectData m_currentSubject;
-        public int m_CurrentHotSpot;
-        public string m_sVerifySubjID;
+        private Config _config;
+        private readonly XmlSerializer _serializer;
+        public uint _nSelectedSensorId;
+        public readonly ArrayList _sensorList;
+        private bool _bClosingApp;
+        private string _sFolderPath;
+        private string _debugFolder;
+        private readonly Color _red = Color.FromArgb(222, 56, 49);
+        private readonly Color _blue = Color.FromArgb(0, 63, 114);
+        private Thread _captureWithPdThread;
+        private Thread _enrollThread;
+        private Thread _verifyThread;
+        private DelegateCaptureThreadFinished _captureThreadFinished;
+        private DelegateVerifyThreadFinished _verifyThreadFinished;
+        private DelegateCaptureThreadFinished _enrollThreadFinished;
+        public WriteResultsDelegate _delegateErrorMessage;
+        private SetNistImageDelegate _delegateSetNistImage;
+        private WriteResultsDelegate _delegateNistStatus;
+        private DelegateCaptureWithPdCancelled _delegateCaptureCancelled;
+        private DelegateCaptureTimeOut _delegateCaptureTimeOut;
+        private DelegateComTimeOut _delegateComTimeOut;
+        private DelegateLatentDetected _delegateLatentDetected;
+        private PreviewLiveMode _delegatePreviewLiveMode;
+        private bool _bPdCaptureInProcess;
+        private bool _bCancelCapture;
+        private bool _bSensorTriggerArmed;
+        public bool _bSpoofEnabled;
+        private uint _matchThreshold;
+        private uint _spoofThreshold;
+        private bool _spoofThresholdHighlySecured;
+        private bool _spoofThresholdSecured;
+        private bool _matchThresholdConvenient;
+        private bool _matchThresholdHighlySecured;
+        private bool _matchThresholdSecured;
+        private bool _spoofThresholdConvenient;
+        private bool _bDevicePresent;
+        private bool _bNistQuality;
+        private bool _bCancelLiveMode;
+        private bool _bLiveModeinProcess;
+        private string _sEnrollSubjId;
+        private bool _newSubjId;
+        public bool _bComTimeOut;
+        private bool _bLatentDetected;
+        private SubjectData _currentSubject;
+        private int _currentHotSpot;
+        private string _sVerifySubjId;
         private readonly string[] _fingersNames = {
             "Meñique Izquierdo",
             "Anular Izquierdo",
@@ -111,19 +107,19 @@ namespace SDKEnrollApp
             "Anular Derecho",
             "Meñique Derecho"
         } ;
-        Image defaultImage, gImage;
+        Image _defaultImage, _gImage;
 
-        LumiSDKWrapper.LumiPreviewCallbackDelegate m_delLiveMode;
+        LumiSdkWrapper.LumiPreviewCallbackDelegate _delLiveMode;
 
-        public byte[] m_bRawImageBuffer;
-        public uint m_nWidth;
-        public uint m_nHeight;
-        public byte[] m_bTemplateBuffer;
+        private byte[] _bRawImageBuffer;
+        private uint _nWidth;
+        private uint _nHeight;
+        private byte[] _bTemplateBuffer;
 
-        public int m_nEnrollmentCaptureIndex = -1;
+        private int _nEnrollmentCaptureIndex = -1;
 
-        int prevclosePointIndex;
-        bool draw = true;
+        int _prevclosePointIndex;
+        bool _draw = true;
 
         public MainForm()
         {
@@ -134,50 +130,49 @@ namespace SDKEnrollApp
             _numberDpi = 500;
             _numberUmbral = 28;
 
-            m_bClosingApp = false;
-            m_bStayInCapture = false;
-            m_MatchThreshold = 0;
-            m_SpoofThreshold = 0;
-            m_SpoofThreshold_HighlySecured = false;
-            m_SpoofThreshold_Secured = false;
-            m_SpoofThreshold_Convenient = false;
-            m_MatchThreshold_HighlySecured = false;
-            m_MatchThreshold_Secured = false;
-            m_MatchThreshold_Convenient = false;
+            _sensorList = new ArrayList();
+            _bClosingApp = false;
+            _matchThreshold = 0;
+            _spoofThreshold = 0;
+            _spoofThresholdHighlySecured = false;
+            _spoofThresholdSecured = false;
+            _spoofThresholdConvenient = false;
+            _matchThresholdHighlySecured = false;
+            _matchThresholdSecured = false;
+            _matchThresholdConvenient = false;
             labelStatus.Text = "";
             labelStatus2.Text = "";
             labelStatus2.Text = "";
             NISTScoreLabel.Text = "";
             _umbral.Text = _numberUmbral.ToString();
-            m_bPDCaptureInProcess = false;
-            m_bCancelCapture = false;
-            m_bCancelLiveMode = false;
-            m_bLiveModeinProcess = false;
-            m_bDevicePresent = false;
-            m_DelegateSetImage = SetImage;
-            m_CaptureThreadFinished = CaptureFinished;
-            m_VerifyThreadFinished = VerifyFinished;
-            m_EnrollThreadFinished = EnrollFinished;
-            m_currentSubject = new SubjectData();
-            m_newSubjID = true;
-            m_sVerifySubjID = "";
-            m_bComTimeOut = false;
-            m_bLatentDetected = false;
-            m_config = new Config();
-            serializer = new XmlSerializer(typeof(Config));
+            _bPdCaptureInProcess = false;
+            _bCancelCapture = false;
+            _bCancelLiveMode = false;
+            _bLiveModeinProcess = false;
+            _bDevicePresent = false;
+            _captureThreadFinished = CaptureFinished;
+            _verifyThreadFinished = VerifyFinished;
+            _enrollThreadFinished = EnrollFinished;
+            _currentSubject = new SubjectData();
+            _newSubjId = true;
+            _sVerifySubjId = "";
+            _bComTimeOut = false;
+            _bLatentDetected = false;
+            _config = new Config();
+            _serializer = new XmlSerializer(typeof(Config));
             
-            m_DelegateErrorMessage = SetText;
-            m_DelegateCaptureCancelled = CaptureCancelled;
-            m_DelegateCaptureTimeOut = CaptureTimeOut;
-            m_DelegateComTimeOut = ComTimeOut;
-            m_DelegateLatentDetected = LatentDetected;
-            m_DelegateNISTStatus = SetNISTStatusText;
-            m_DelegatePreviewLiveMode = PreviewCallback;
-            m_DelegateSetNISTImage = SetNISTStatusImage;
+            _delegateErrorMessage = SetText;
+            _delegateCaptureCancelled = CaptureCancelled;
+            _delegateCaptureTimeOut = CaptureTimeOut;
+            _delegateComTimeOut = ComTimeOut;
+            _delegateLatentDetected = LatentDetected;
+            _delegateNistStatus = SetNistStatusText;
+            _delegatePreviewLiveMode = PreviewCallback;
+            _delegateSetNistImage = SetNistStatusImage;
             OperatingSystem os = Environment.OSVersion;
 
             CreateAppDataFolder(os);
-            defaultImage = pictureBox1.Image;
+            _defaultImage = pictureBox1.Image;
     
             if (GetSensorList() == false)
             {
@@ -185,27 +180,27 @@ namespace SDKEnrollApp
             }
             else
             {
-                m_bDevicePresent = true;
+                _bDevicePresent = true;
                 PopulateSensorComboBox();
                 SetMatchAndSpoofThresholds();
             }
 
-            m_delLiveMode = PreviewCallback;
+            _delLiveMode = PreviewCallback;
         }
 
         ~MainForm()
         {
-            GC.KeepAlive(m_delLiveMode);
+            GC.KeepAlive(_delLiveMode);
         }
 
-        public void EnableControls()
+        private void EnableControls()
         {
 
             CaptureBtnClick.Enabled = true;
-            if (m_bPDCaptureInProcess)
+            if (_bPdCaptureInProcess)
             {
                 CaptureBtnClick.Text = "Capture";
-                m_bPDCaptureInProcess = false;
+                _bPdCaptureInProcess = false;
 
             }
             LiveBtn.Enabled = true;
@@ -214,7 +209,7 @@ namespace SDKEnrollApp
             tabControl.Enabled = true;
         }
 
-        public void EnableControlsForLiveMode()
+        private void EnableControlsForLiveMode()
         {
             LiveBtn.Text = "Live Mode";
             LumiPictureBox1.Image = null;
@@ -231,13 +226,13 @@ namespace SDKEnrollApp
 
         private void VerifyFinished()
         {
-            if(m_bComTimeOut==false)
+            if(_bComTimeOut==false)
                 EnableVerifyControls();
         }
 
         private void CaptureCancelled()
         {
-            m_bCancelCapture = true;
+            _bCancelCapture = true;
         }
 
         private void CaptureTimeOut()
@@ -258,14 +253,14 @@ namespace SDKEnrollApp
             DisableControls();
         }
 
-        public void DisableControls()
+        private void DisableControls()
         {
             DisableControls(false);
         }
 
-        private void DisableControls(bool bCaptureWithPD)
+        private void DisableControls(bool bCaptureWithPd)
         {
-            if (m_bDevicePresent == false)
+            if (_bDevicePresent == false)
             {
                 LiveBtn.Enabled = false;
                 SelectSensorComboBox.Enabled = false;
@@ -279,9 +274,9 @@ namespace SDKEnrollApp
             else
             {
                 LumiPictureBox1.Image = null;
-                if (bCaptureWithPD)
+                if (bCaptureWithPd)
                 {
-                    m_bPDCaptureInProcess = true;
+                    _bPdCaptureInProcess = true;
                     CaptureBtnClick.Text = "Cancel";
                 }
                 else
@@ -297,7 +292,7 @@ namespace SDKEnrollApp
 
         private void DisableControlsForLiveMode()
         {
-            if (m_bDevicePresent == false)
+            if (_bDevicePresent == false)
             {
                 LiveBtn.Enabled = false;
                 SelectSensorComboBox.Enabled = false;
@@ -317,66 +312,66 @@ namespace SDKEnrollApp
             }
         }
 
-        public bool GetSensorList()
+        private bool GetSensorList()
         {
-            LumiSDKWrapper.LumiStatus rc = LumiSDKWrapper.LumiStatus.LUMI_STATUS_OK;
+            LumiSdkWrapper.LumiStatus rc = LumiSdkWrapper.LumiStatus.LumiStatusOk;
 
-            LumiSDKWrapper.LUMI_DEVICE dev = new LumiSDKWrapper.LUMI_DEVICE();
+            LumiSdkWrapper.LumiDevice dev = new LumiSdkWrapper.LumiDevice();
 
             uint nNumDevices = 0;
             uint handle = 0;
-            StringBuilder DevList = null;
+            StringBuilder devList = null;
 
-            rc = LumiSDKWrapper.LumiQueryNumberDevices(ref nNumDevices, DevList);
+            rc = LumiSdkWrapper.LumiQueryNumberDevices(ref nNumDevices, devList);
 
-            if (rc != LumiSDKWrapper.LumiStatus.LUMI_STATUS_OK)
+            if (rc != LumiSdkWrapper.LumiStatus.LumiStatusOk)
             {
-                SetText("Installation error please reinstall\n", Red);
+                SetText("Installation error please reinstall\n", _red);
                 return false;
             }
 
             if (nNumDevices < 1)
             {
-                SetText("No compatible Lumidigm sensors found. \nPlease connect a sensor and \nrestart the SDK Enroll App", Red);
+                SetText("No compatible Lumidigm sensors found. \nPlease connect a sensor and \nrestart the SDK Enroll App", _red);
                 return false;
             }
             uint nFailedDevices = 0;
 
             for (uint ii = 0; ii < nNumDevices; ii++)
             {
-                rc = LumiSDKWrapper.LumiQueryDevice(ii, ref dev);
-                if (rc != LumiSDKWrapper.LumiStatus.LUMI_STATUS_OK) return false;
+                rc = LumiSdkWrapper.LumiQueryDevice(ii, ref dev);
+                if (rc != LumiSdkWrapper.LumiStatus.LumiStatusOk) return false;
 
-                rc = LumiSDKWrapper.LumiInit(dev.hDevHandle, ref handle);
-                if (rc != LumiSDKWrapper.LumiStatus.LUMI_STATUS_OK)
+                rc = LumiSdkWrapper.LumiInit(dev.hDevHandle, ref handle);
+                if (rc != LumiSdkWrapper.LumiStatus.LumiStatusOk)
                 {
-                    SetText("A device could not be initialized, it may be busy in another application. \n",Red);
+                    SetText("A device could not be initialized, it may be busy in another application. \n",_red);
                     nFailedDevices++;
                 }
                 else
                 {
                     Sensor sensorid = new Sensor();
-                    sensorid.handle = handle;
+                    sensorid.Handle = handle;
                     sensorid.SensorType = dev.SensorType;
-                    sensorid.strIdentifier = dev.strIdentifier;
-                    SensorList.Add(sensorid);
+                    sensorid.StrIdentifier = dev.strIdentifier;
+                    _sensorList.Add(sensorid);
                 }
 
             }
             if (nFailedDevices == nNumDevices)
             {
-                SetText("All devices could not be initialized, they may be busy in\n another application. Please close all other\n applications and restart the Enroll App", Red);
+                SetText("All devices could not be initialized, they may be busy in\n another application. Please close all other\n applications and restart the Enroll App", _red);
                 return false;
             }
             return true;
         }
 
-        private void SetNISTStatusText(string text, Color txtColor)
+        private void SetNistStatusText(string text, Color txtColor)
         {
-            if (m_bClosingApp) return;
+            if (_bClosingApp) return;
             if (NISTScoreLabel.InvokeRequired)
             {
-                SetTextCallback d = SetNISTStatusText;
+                SetTextCallback d = SetNistStatusText;
                 Invoke(d, text, txtColor);
             }
             else
@@ -386,7 +381,7 @@ namespace SDKEnrollApp
             }
         }
 
-        private void SetNISTStatusImage(uint nistScore)
+        private void SetNistStatusImage(uint nistScore)
         {
             nistPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
             if(nistScore == 1)
@@ -413,7 +408,7 @@ namespace SDKEnrollApp
 
         private void SetText(string text, Color txtColor)
         {
-            if (m_bClosingApp) return;
+            if (_bClosingApp) return;
             if (labelStatus.InvokeRequired)
             {
                 SetTextCallback d = SetText;
@@ -429,9 +424,9 @@ namespace SDKEnrollApp
         }
 
         // Callback function for Preview
-        public void PreviewCallback(IntPtr pOutputImage, int width, int height, int imgNum)
+        private void PreviewCallback(IntPtr pOutputImage, int width, int height, int imgNum)
         {
-            if (m_nEnrollmentCaptureIndex != -1) return;
+            if (_nEnrollmentCaptureIndex != -1) return;
             try
             {
                 int nSize = width * height * 3;//actually a color image
@@ -443,9 +438,9 @@ namespace SDKEnrollApp
 
                 image = null;
             }
-            catch (Exception error_prev)
+            catch (Exception errorPrev)
             {
-                MessageBox.Show(error_prev.Message);
+                MessageBox.Show(errorPrev.Message);
             }
         }
 
@@ -465,210 +460,206 @@ namespace SDKEnrollApp
                     case 5:
                     {
                         // if XP
-                        m_sFolderPath = "..\\bin\\AppData";
+                        _sFolderPath = "..\\bin\\AppData";
                         string curDir = Directory.GetCurrentDirectory();
-                        m_debugFolder = curDir + "\\AppData\\Debug";
+                        _debugFolder = curDir + "\\AppData\\Debug";
 
-                        isExists = Directory.Exists(m_sFolderPath);
+                        isExists = Directory.Exists(_sFolderPath);
                         if (!isExists)
                         {
-                            Directory.CreateDirectory(m_sFolderPath);
-                            Directory.CreateDirectory(m_sFolderPath + "\\Database");
-                            Directory.CreateDirectory(m_sFolderPath + "\\Debug");
+                            Directory.CreateDirectory(_sFolderPath);
+                            Directory.CreateDirectory(_sFolderPath + "\\Database");
+                            Directory.CreateDirectory(_sFolderPath + "\\Debug");
                         }
                         else
                         {                            
-                            if(!Directory.Exists(m_debugFolder))
-                                Directory.CreateDirectory(m_debugFolder);
+                            if(!Directory.Exists(_debugFolder))
+                                Directory.CreateDirectory(_debugFolder);
 
                         }
 
                         if (!File.Exists(@"..\\bin\\AppData\\Settings.xml"))
                         {
-                            m_config.SpoofEnabled = false;
+                            _config.SpoofEnabled = false;
                             EnableSpoofDetChkBox.Checked = false;
-                            m_bSpoofEnabled = false;
+                            _bSpoofEnabled = false;
 
-                            m_config.SensorTriggerArmed = true;
+                            _config.SensorTriggerArmed = true;
                             SensorTriggerArmedChkBox.Checked = true;
-                            m_bSensorTriggerArmed = true;
+                            _bSensorTriggerArmed = true;
 
-                            m_config.NISTQuality = true;
+                            _config.NistQuality = true;
                             NISTQualityChkBox.Checked = true;
-                            m_bNISTQuality = true;
+                            _bNistQuality = true;
 
-                            m_config.SpoofSecure = true;
+                            _config.SpoofSecure = true;
                             SpoofSecure.Checked = true;
-                            m_SpoofThreshold_Secured = true;
+                            _spoofThresholdSecured = true;
 
-                            m_config.SpoofHighlySecured = false;
+                            _config.SpoofHighlySecured = false;
                             SpoofHighlySecure.Checked = false;
-                            m_SpoofThreshold_HighlySecured = false;
+                            _spoofThresholdHighlySecured = false;
 
-                            m_config.SpoofConvenient = false;
+                            _config.SpoofConvenient = false;
                             SpoofConvenient.Checked = false;
-                            m_SpoofThreshold_Convenient = false;
+                            _spoofThresholdConvenient = false;
 
-                            m_config.MatchSecure = true;
+                            _config.MatchSecure = true;
                             MatchSecure.Checked = true;
-                            m_MatchThreshold_Secured = true;
+                            _matchThresholdSecured = true;
 
-                            m_config.MatchHighlySecure = false;
+                            _config.MatchHighlySecure = false;
                             MatchHighlySecured.Checked = false;
-                            m_MatchThreshold_HighlySecured = false;
+                            _matchThresholdHighlySecured = false;
 
-                            m_config.MatchConvenient = false;
+                            _config.MatchConvenient = false;
                             MatchConvenient.Checked = false;
-                            m_MatchThreshold_Convenient = false;
+                            _matchThresholdConvenient = false;
 
-                            UpdateConfigXML();
+                            UpdateConfigXml();
 
                         }
                         else
                         {
 
-                            ReadConfigXML();
+                            ReadConfigXml();
 
-                            EnableSpoofDetChkBox.Checked = m_config.SpoofEnabled;
-                            m_bSpoofEnabled = m_config.SpoofEnabled;
+                            EnableSpoofDetChkBox.Checked = _config.SpoofEnabled;
+                            _bSpoofEnabled = _config.SpoofEnabled;
 
-                            SensorTriggerArmedChkBox.Checked = m_config.SensorTriggerArmed;
-                            m_bSensorTriggerArmed = m_config.SensorTriggerArmed;
+                            SensorTriggerArmedChkBox.Checked = _config.SensorTriggerArmed;
+                            _bSensorTriggerArmed = _config.SensorTriggerArmed;
 
-                            NISTQualityChkBox.Checked = m_config.NISTQuality;
-                            m_bNISTQuality = m_config.NISTQuality;
+                            NISTQualityChkBox.Checked = _config.NistQuality;
+                            _bNistQuality = _config.NistQuality;
 
-                            SpoofSecure.Checked = m_config.SpoofSecure;
-                            m_SpoofThreshold_Secured = m_config.SpoofSecure;
+                            SpoofSecure.Checked = _config.SpoofSecure;
+                            _spoofThresholdSecured = _config.SpoofSecure;
 
-                            SpoofHighlySecure.Checked = m_config.SpoofHighlySecured;
-                            m_SpoofThreshold_HighlySecured = m_config.SpoofHighlySecured;
+                            SpoofHighlySecure.Checked = _config.SpoofHighlySecured;
+                            _spoofThresholdHighlySecured = _config.SpoofHighlySecured;
 
-                            SpoofConvenient.Checked = m_config.SpoofConvenient;
-                            m_SpoofThreshold_Convenient = m_config.SpoofConvenient;
+                            SpoofConvenient.Checked = _config.SpoofConvenient;
+                            _spoofThresholdConvenient = _config.SpoofConvenient;
 
-                            MatchSecure.Checked = m_config.MatchSecure;
-                            m_MatchThreshold_Secured = m_config.MatchSecure;
+                            MatchSecure.Checked = _config.MatchSecure;
+                            _matchThresholdSecured = _config.MatchSecure;
 
-                            MatchHighlySecured.Checked = m_config.MatchHighlySecure;
-                            m_MatchThreshold_HighlySecured = m_config.MatchHighlySecure;
+                            MatchHighlySecured.Checked = _config.MatchHighlySecure;
+                            _matchThresholdHighlySecured = _config.MatchHighlySecure;
 
-                            MatchConvenient.Checked = m_config.MatchConvenient;
-                            m_MatchThreshold_Convenient = m_config.MatchConvenient;
+                            MatchConvenient.Checked = _config.MatchConvenient;
+                            _matchThresholdConvenient = _config.MatchConvenient;
 
                         }
                     }break;
                 case 6:  // if Win7
                     {
-                        m_sFolderPath = "C:\\ProgramData\\Lumidigm\\SDKEnrollExample\\AppData";
-                        m_debugFolder = m_sFolderPath + "\\Debug";                     
-                        isExists = Directory.Exists(m_sFolderPath);
+                        _sFolderPath = "C:\\ProgramData\\Lumidigm\\SDKEnrollExample\\AppData";
+                        _debugFolder = _sFolderPath + "\\Debug";                     
+                        isExists = Directory.Exists(_sFolderPath);
                         if (vs.Minor != 0)
                         {
                             if (!isExists)
                             {
-                                Directory.CreateDirectory(m_sFolderPath);
-                                Directory.CreateDirectory(m_sFolderPath + "\\Database");
-                                Directory.CreateDirectory(m_sFolderPath + "\\Debug");
+                                Directory.CreateDirectory(_sFolderPath);
+                                Directory.CreateDirectory(_sFolderPath + "\\Database");
+                                Directory.CreateDirectory(_sFolderPath + "\\Debug");
                             }
                             else
                             {
                                 
-                                if (!Directory.Exists(m_debugFolder))
-                                    Directory.CreateDirectory(m_sFolderPath + "\\Debug");
+                                if (!Directory.Exists(_debugFolder))
+                                    Directory.CreateDirectory(_sFolderPath + "\\Debug");
 
                             }
                             if (!File.Exists(@"C:\\ProgramData\\Lumidigm\\SDKEnrollExample\\AppData\\Settings.xml"))
                             {
-                                m_config.SpoofEnabled = false;
+                                _config.SpoofEnabled = false;
                                 EnableSpoofDetChkBox.Checked = false;
-                                m_bSpoofEnabled = false;
+                                _bSpoofEnabled = false;
 
-                                m_config.SensorTriggerArmed = true;
+                                _config.SensorTriggerArmed = true;
                                 SensorTriggerArmedChkBox.Checked = true;
-                                m_bSensorTriggerArmed = true;
+                                _bSensorTriggerArmed = true;
 
-                                m_config.NISTQuality = true;
+                                _config.NistQuality = true;
                                 NISTQualityChkBox.Checked = true;
-                                m_bNISTQuality = true;
+                                _bNistQuality = true;
 
-                                m_config.SpoofSecure = true;
+                                _config.SpoofSecure = true;
                                 SpoofSecure.Checked = true;
-                                m_SpoofThreshold_Secured = true;
+                                _spoofThresholdSecured = true;
 
-                                m_config.SpoofHighlySecured = false;
+                                _config.SpoofHighlySecured = false;
                                 SpoofHighlySecure.Checked = false;
-                                m_SpoofThreshold_HighlySecured = false;
+                                _spoofThresholdHighlySecured = false;
 
-                                m_config.SpoofConvenient = false;
+                                _config.SpoofConvenient = false;
                                 SpoofConvenient.Checked = false;
-                                m_SpoofThreshold_Convenient = false;
+                                _spoofThresholdConvenient = false;
 
-                                m_config.MatchSecure = true;
+                                _config.MatchSecure = true;
                                 MatchSecure.Checked = true;
-                                m_MatchThreshold_Secured = true;
+                                _matchThresholdSecured = true;
 
-                                m_config.MatchHighlySecure = false;
+                                _config.MatchHighlySecure = false;
                                 MatchHighlySecured.Checked = false;
-                                m_MatchThreshold_HighlySecured = false;
+                                _matchThresholdHighlySecured = false;
 
-                                m_config.MatchConvenient = false;
+                                _config.MatchConvenient = false;
                                 MatchConvenient.Checked = false;
-                                m_MatchThreshold_Convenient = false;
+                                _matchThresholdConvenient = false;
 
-                                UpdateConfigXML();
-
+                                UpdateConfigXml();
                             }
                             else
                             {
 
-                                ReadConfigXML();
+                                ReadConfigXml();
 
-                                EnableSpoofDetChkBox.Checked = m_config.SpoofEnabled;
-                                m_bSpoofEnabled = m_config.SpoofEnabled;
+                                EnableSpoofDetChkBox.Checked = _config.SpoofEnabled;
+                                _bSpoofEnabled = _config.SpoofEnabled;
 
-                                SensorTriggerArmedChkBox.Checked = m_config.SensorTriggerArmed;
-                                m_bSensorTriggerArmed = m_config.SensorTriggerArmed;
+                                SensorTriggerArmedChkBox.Checked = _config.SensorTriggerArmed;
+                                _bSensorTriggerArmed = _config.SensorTriggerArmed;
 
-                                NISTQualityChkBox.Checked = m_config.NISTQuality;
-                                m_bNISTQuality = m_config.NISTQuality;
+                                NISTQualityChkBox.Checked = _config.NistQuality;
+                                _bNistQuality = _config.NistQuality;
 
-                                SpoofSecure.Checked = m_config.SpoofSecure;
-                                m_SpoofThreshold_Secured = m_config.SpoofSecure;
+                                SpoofSecure.Checked = _config.SpoofSecure;
+                                _spoofThresholdSecured = _config.SpoofSecure;
 
-                                SpoofHighlySecure.Checked = m_config.SpoofHighlySecured;
-                                m_SpoofThreshold_HighlySecured = m_config.SpoofHighlySecured;
+                                SpoofHighlySecure.Checked = _config.SpoofHighlySecured;
+                                _spoofThresholdHighlySecured = _config.SpoofHighlySecured;
 
-                                SpoofConvenient.Checked = m_config.SpoofConvenient;
-                                m_SpoofThreshold_Convenient = m_config.SpoofConvenient;
+                                SpoofConvenient.Checked = _config.SpoofConvenient;
+                                _spoofThresholdConvenient = _config.SpoofConvenient;
 
-                                MatchSecure.Checked = m_config.MatchSecure;
-                                m_MatchThreshold_Secured = m_config.MatchSecure;
+                                MatchSecure.Checked = _config.MatchSecure;
+                                _matchThresholdSecured = _config.MatchSecure;
 
-                                MatchHighlySecured.Checked = m_config.MatchHighlySecure;
-                                m_MatchThreshold_HighlySecured = m_config.MatchHighlySecure;
+                                MatchHighlySecured.Checked = _config.MatchHighlySecure;
+                                _matchThresholdHighlySecured = _config.MatchHighlySecure;
 
-                                MatchConvenient.Checked = m_config.MatchConvenient;
-                                m_MatchThreshold_Convenient = m_config.MatchConvenient;
-
+                                MatchConvenient.Checked = _config.MatchConvenient;
+                                _matchThresholdConvenient = _config.MatchConvenient;
                             }
-
                         }
                     } break;
-
                     default:
-                        MessageBox.Show("This Operating System isn't Supported");
+                        MessageBox.Show(@"This Operating System isn't Supported");
                         return false;
                 }
             }
 
-            m_debugFolder = m_debugFolder.Replace("\\", "/");
-            m_debugFolder = m_debugFolder + "/";
+            _debugFolder = _debugFolder.Replace("\\", "/");
+            _debugFolder = _debugFolder + "/";
 
             return true;
         }
 
-        public bool UpdateConfigXML()
+        private bool UpdateConfigXml()
         {
             string xmlFileLoc;
             if (Environment.OSVersion.Version.Major == 5) // XP
@@ -678,12 +669,12 @@ namespace SDKEnrollApp
 
             TextWriter tw = new StreamWriter(xmlFileLoc);
 
-            serializer.Serialize(tw, m_config);
+            _serializer.Serialize(tw, _config);
             tw.Close();
             return true;
         }
 
-        public bool ReadConfigXML()
+        private bool ReadConfigXml()
         {
             string xmlFileLoc;
             if (Environment.OSVersion.Version.Major == 5) // XP
@@ -692,15 +683,14 @@ namespace SDKEnrollApp
                 xmlFileLoc = "C:\\ProgramData\\Lumidigm\\SDKEnrollExample\\AppData\\Settings.xml";
 
             TextReader tr = new StreamReader(xmlFileLoc);
-            m_config = (Config)serializer.Deserialize(tr);
+            _config = (Config)_serializer.Deserialize(tr);
             tr.Close();
             return true;
         }
 
-        public int AcquStatusCallback(LumiSDKWrapper.LUMI_ACQ_STATUS status)
+        public int AcquStatusCallback(LumiSdkWrapper.LumiAcqStatus status)
         {
-
-            if (status == LumiSDKWrapper.LUMI_ACQ_STATUS.LUMI_ACQ_FINGER_PRESENT) return 0;
+            if (status == LumiSdkWrapper.LumiAcqStatus.LumiAcqFingerPresent) return 0;
 
             SetText("", Color.Blue);
 
@@ -710,21 +700,21 @@ namespace SDKEnrollApp
         public int PresenceDetectionCallback(IntPtr pImage, int width, int height, uint status)
         {
  
-            if (m_nEnrollmentCaptureIndex != -1) return 0;
-            if (m_bClosingApp)
+            if (_nEnrollmentCaptureIndex != -1) return 0;
+            if (_bClosingApp)
             {
                 return -2;
             }
             int nSize = width * height * 3; // 24 bpp format is returned from SDK
             byte[] pOutputImage = new byte[nSize];
-            Sensor sensorid = (Sensor)SensorList[(int)m_nSelectedSensorID];
-            LumiSDKWrapper.LUMI_CONFIG deviceConfig;
+            Sensor sensorid = (Sensor)_sensorList[(int)_nSelectedSensorId];
+            LumiSdkWrapper.LumiConfig deviceConfig;
             deviceConfig.eTemplateType = 0;
             deviceConfig.eTransInfo = 0;
             deviceConfig.nTriggerTimeout = 0;
-            LumiSDKWrapper.LumiGetConfig(sensorid.handle, ref deviceConfig);
+            LumiSdkWrapper.LumiGetConfig(sensorid.Handle, ref deviceConfig);
 
-            if (sensorid.SensorType == LumiSDKWrapper.LUMI_SENSOR_TYPE.M32X)
+            if (sensorid.SensorType == LumiSdkWrapper.LumiSensorType.M32X)
             {
                 Bitmap bitmap1 = Resources.CaptureInProgress_M320_resized;
                 BitmapData bmpData = bitmap1.LockBits(new Rectangle(0, 0, bitmap1.Width, bitmap1.Height), ImageLockMode.WriteOnly, bitmap1.PixelFormat);
@@ -737,9 +727,9 @@ namespace SDKEnrollApp
 
             SetImage(ref pOutputImage, (uint)width, (uint)height, (int)status, null, 0);
 
-            if (m_bCancelCapture)
+            if (_bCancelCapture)
             {
-                m_bCancelCapture = false;
+                _bCancelCapture = false;
                 LumiPictureBox1.Image = null;
                 return -2;   // Return -2 to cancel the capture             
             }
@@ -761,21 +751,21 @@ namespace SDKEnrollApp
             //    return;
             //}
 
-            m_nEnrollmentCaptureIndex = nEnrollmentCaptureIndex;
+            _nEnrollmentCaptureIndex = nEnrollmentCaptureIndex;
 
             SetImage(ref image, width, height, -1, pTemplate, nTempSz);
             SetImage(ref image, width, height, -1, pTemplate, nTempSz, nEnrollmentCaptureIndex);
-            m_bRawImageBuffer = new byte[snapShotRaw.Length];
-            snapShotRaw.CopyTo(m_bRawImageBuffer, 0);
+            _bRawImageBuffer = new byte[snapShotRaw.Length];
+            snapShotRaw.CopyTo(_bRawImageBuffer, 0);
 
             if (pTemplate != null)
             {
-                m_bTemplateBuffer = new byte[pTemplate.Length];
-                pTemplate.CopyTo(m_bTemplateBuffer, 0);
+                _bTemplateBuffer = new byte[pTemplate.Length];
+                pTemplate.CopyTo(_bTemplateBuffer, 0);
             }
-            m_nWidth = width;
-            m_nHeight = height;
-            //Marshal.Copy(snapShotRaw, 0, m_bRawImageBuffer[0], snapShotRaw.Length);
+            _nWidth = width;
+            _nHeight = height;
+            //Marshal.Copy(snapShotRaw, 0, _bRawImageBuffer[0], snapShotRaw.Length);
         }
 
         // Overloaded Method to set the image buffer into the Picture box control
@@ -870,15 +860,15 @@ namespace SDKEnrollApp
             }
         }
 
-        public void CalculateNISTScore(byte[] pImage, uint nWidth, uint nHeight, uint nBPP, uint nDPI, ref uint nNFIQ)
+        private void CalculateNistScore(byte[] pImage, uint nWidth, uint nHeight, uint nBpp, uint nDpi, ref uint nNfiq)
         {
             //uint width = 0, height = 0;
             //uint BPP = 0, DPI = 0, NFIQ = 0;
-            byte[] NISTImage = new byte[5000]; //array to hold the template
+            byte[] nistImage = new byte[5000]; //array to hold the template
 
         }
 
-        public Bitmap ResizeBitmapAndDrawArrows(Bitmap image, int nWidth, int nHeight, int pdStatus)
+        private Bitmap ResizeBitmapAndDrawArrows(Bitmap image, int nWidth, int nHeight, int pdStatus)
         {
             Bitmap result = new Bitmap(nWidth, nHeight);
             using (Graphics graphics = Graphics.FromImage(result))
@@ -890,7 +880,7 @@ namespace SDKEnrollApp
         }
         
         // Resize bitmap image
-        public Bitmap ResizeBitmap(Bitmap image, int nWidth, int nHeight, int pdStatus)
+        private Bitmap ResizeBitmap(Bitmap image, int nWidth, int nHeight, int pdStatus)
         {
             Bitmap result = new Bitmap(nWidth, nHeight);
             using (Graphics graphics = Graphics.FromImage(result))
@@ -901,33 +891,33 @@ namespace SDKEnrollApp
             return result;
         }
 
-        void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            m_bClosingApp = true;
-            if (m_CaptureWithPDThread != null)
+            _bClosingApp = true;
+            if (_captureWithPdThread != null)
             {
-                m_CaptureWithPDThread.Join(1000);
+                _captureWithPdThread.Join(1000);
             }
-            if (m_EnrollThread != null)
+            if (_enrollThread != null)
             {
-                m_EnrollThread.Join(1000);
+                _enrollThread.Join(1000);
             }
             else
             {
-                if (m_bDevicePresent)
+                if (_bDevicePresent)
                     DeviceClose();
             }
         }
 
-        public void DeviceClose()
+        private void DeviceClose()
         {
-            Sensor currentSensor = (Sensor)SensorList[(int)m_nSelectedSensorID];
-            LumiSDKWrapper.LumiStatus _rc;
+            Sensor currentSensor = (Sensor)_sensorList[(int)_nSelectedSensorId];
+            LumiSdkWrapper.LumiStatus rc;
 
             try
             {
-                _rc = LumiSDKWrapper.LumiClose(currentSensor.handle);
-                _rc = LumiSDKWrapper.LumiExit();
+                rc = LumiSdkWrapper.LumiClose(currentSensor.Handle);
+                rc = LumiSdkWrapper.LumiExit();
             }
             catch (Exception err)
             {
@@ -935,181 +925,181 @@ namespace SDKEnrollApp
             }
         }
 
-        void SetMatchAndSpoofThresholds()
+        private void SetMatchAndSpoofThresholds()
         {
-            if (SensorList.Count == 0)
+            if (_sensorList.Count == 0)
                 return;
-            Sensor currentSensor = (Sensor)SensorList[(int)m_nSelectedSensorID];
-            LumiSDKWrapper.LumiStatus rc;
-            LumiSDKWrapper.LUMI_VERSION versInfo = new LumiSDKWrapper.LUMI_VERSION();
+            Sensor currentSensor = (Sensor)_sensorList[(int)_nSelectedSensorId];
+            LumiSdkWrapper.LumiStatus rc;
+            LumiSdkWrapper.LumiVersion versInfo = new LumiSdkWrapper.LumiVersion();
 
             switch (currentSensor.SensorType)
             {
-                case LumiSDKWrapper.LUMI_SENSOR_TYPE.VENUS:
+                case LumiSdkWrapper.LumiSensorType.Venus:
                     {
-                        uint Handle = 0;
-                        Handle = currentSensor.handle;
-                        rc = LumiSDKWrapper.LumiGetVersionInfo(Handle, ref versInfo);
-                        if (rc != LumiSDKWrapper.LumiStatus.LUMI_STATUS_OK)
+                        uint handle = 0;
+                        handle = currentSensor.Handle;
+                        rc = LumiSdkWrapper.LumiGetVersionInfo(handle, ref versInfo);
+                        if (rc != LumiSdkWrapper.LumiStatus.LumiStatusOk)
                             return;
                         uint version = Convert.ToUInt32(versInfo.fwrVersion);
                         uint deviceType = Convert.ToUInt32(versInfo.tnsVersion);
 
                         if (version > 21304)
                         {
-                            if (m_MatchThreshold_HighlySecured)
-                                m_MatchThreshold = 27532;
-                            else if (m_MatchThreshold_Secured)
-                                m_MatchThreshold = 23688;
+                            if (_matchThresholdHighlySecured)
+                                _matchThreshold = 27532;
+                            else if (_matchThresholdSecured)
+                                _matchThreshold = 23688;
                             else
-                                m_MatchThreshold = 20646;
+                                _matchThreshold = 20646;
 
-                            if (m_SpoofThreshold_HighlySecured)
-                                m_SpoofThreshold = 5;
-                            else if (m_SpoofThreshold_Secured)
-                                m_SpoofThreshold = 150;
+                            if (_spoofThresholdHighlySecured)
+                                _spoofThreshold = 5;
+                            else if (_spoofThresholdSecured)
+                                _spoofThreshold = 150;
                             else
-                                m_SpoofThreshold = 1050;                            
+                                _spoofThreshold = 1050;                            
                         }
                         else if (version == 21304)
                         {
-                            if (m_MatchThreshold_HighlySecured)
-                                m_MatchThreshold = 24298;
-                            else if (m_MatchThreshold_Secured)
-                                m_MatchThreshold = 22418;
+                            if (_matchThresholdHighlySecured)
+                                _matchThreshold = 24298;
+                            else if (_matchThresholdSecured)
+                                _matchThreshold = 22418;
                             else
-                                m_MatchThreshold = 21548;
+                                _matchThreshold = 21548;
 
-                            if (m_SpoofThreshold_HighlySecured)
-                                m_SpoofThreshold = 5;
-                            else if (m_SpoofThreshold_Secured)
-                                m_SpoofThreshold = 150;
+                            if (_spoofThresholdHighlySecured)
+                                _spoofThreshold = 5;
+                            else if (_spoofThresholdSecured)
+                                _spoofThreshold = 150;
                             else
-                                m_SpoofThreshold = 1050;    
+                                _spoofThreshold = 1050;    
                         }
                         else if (version <= 9538)
                         {
                             if (deviceType == 61)
                             {
-                                if (m_MatchThreshold_HighlySecured)
-                                    m_MatchThreshold = 24298;
-                                else if (m_MatchThreshold_Secured)
-                                    m_MatchThreshold = 22418;
+                                if (_matchThresholdHighlySecured)
+                                    _matchThreshold = 24298;
+                                else if (_matchThresholdSecured)
+                                    _matchThreshold = 22418;
                                 else
-                                    m_MatchThreshold = 21548;
+                                    _matchThreshold = 21548;
 
-                                if (m_SpoofThreshold_HighlySecured)
-                                    m_SpoofThreshold = 100;
-                                else if (m_SpoofThreshold_Secured)
-                                    m_SpoofThreshold = 200;
+                                if (_spoofThresholdHighlySecured)
+                                    _spoofThreshold = 100;
+                                else if (_spoofThresholdSecured)
+                                    _spoofThreshold = 200;
                                 else
-                                    m_SpoofThreshold = 1000;   
+                                    _spoofThreshold = 1000;   
 
                             }
                             else
                             {
-                                if (m_MatchThreshold_HighlySecured)
-                                    m_MatchThreshold = 24298;
-                                else if (m_MatchThreshold_Secured)
-                                    m_MatchThreshold = 22418;
+                                if (_matchThresholdHighlySecured)
+                                    _matchThreshold = 24298;
+                                else if (_matchThresholdSecured)
+                                    _matchThreshold = 22418;
                                 else
-                                    m_MatchThreshold = 21548;
+                                    _matchThreshold = 21548;
 
-                                if (m_SpoofThreshold_HighlySecured)
-                                    m_SpoofThreshold = 100;
-                                else if (m_SpoofThreshold_Secured)
-                                    m_SpoofThreshold = 200;
+                                if (_spoofThresholdHighlySecured)
+                                    _spoofThreshold = 100;
+                                else if (_spoofThresholdSecured)
+                                    _spoofThreshold = 200;
                                 else
-                                    m_SpoofThreshold = 1000;   
+                                    _spoofThreshold = 1000;   
                             }
 
                         }
 
                     } break;
-                case LumiSDKWrapper.LUMI_SENSOR_TYPE.V31X:
-                case LumiSDKWrapper.LUMI_SENSOR_TYPE.V371:
+                case LumiSdkWrapper.LumiSensorType.V31X:
+                case LumiSdkWrapper.LumiSensorType.V371:
                     {
-                        if (m_MatchThreshold_HighlySecured)
-                            m_MatchThreshold = 24739;
-                        else if (m_MatchThreshold_Secured)
-                            m_MatchThreshold = 21493;
+                        if (_matchThresholdHighlySecured)
+                            _matchThreshold = 24739;
+                        else if (_matchThresholdSecured)
+                            _matchThreshold = 21493;
                         else
-                            m_MatchThreshold = 16873;
+                            _matchThreshold = 16873;
 
-                        if (m_SpoofThreshold_HighlySecured)
-                            m_SpoofThreshold = 5;
-                        else if (m_SpoofThreshold_Secured)
-                            m_SpoofThreshold = 150;
+                        if (_spoofThresholdHighlySecured)
+                            _spoofThreshold = 5;
+                        else if (_spoofThresholdSecured)
+                            _spoofThreshold = 150;
                         else
-                            m_SpoofThreshold = 1050;   
+                            _spoofThreshold = 1050;   
 
                     } break;
-                case LumiSDKWrapper.LUMI_SENSOR_TYPE.M300:
+                case LumiSdkWrapper.LumiSensorType.M300:
                     {
-                        if (m_MatchThreshold_HighlySecured)
-                            m_MatchThreshold = 29990;
-                        else if (m_MatchThreshold_Secured)
-                            m_MatchThreshold = 27520;
+                        if (_matchThresholdHighlySecured)
+                            _matchThreshold = 29990;
+                        else if (_matchThresholdSecured)
+                            _matchThreshold = 27520;
                         else
-                            m_MatchThreshold = 26350;
+                            _matchThreshold = 26350;
 
-                        if (m_SpoofThreshold_HighlySecured)
-                            m_SpoofThreshold = 100;
-                        else if (m_SpoofThreshold_Secured)
-                            m_SpoofThreshold = 200;
+                        if (_spoofThresholdHighlySecured)
+                            _spoofThreshold = 100;
+                        else if (_spoofThresholdSecured)
+                            _spoofThreshold = 200;
                         else
-                            m_SpoofThreshold = 1000;   
+                            _spoofThreshold = 1000;   
 
                     } break;
-                case LumiSDKWrapper.LUMI_SENSOR_TYPE.M100:
+                case LumiSdkWrapper.LumiSensorType.M100:
                     {
-                        if (m_MatchThreshold_HighlySecured)
-                            m_MatchThreshold = 22418;
-                        else if (m_MatchThreshold_Secured)
-                            m_MatchThreshold = 22000;
+                        if (_matchThresholdHighlySecured)
+                            _matchThreshold = 22418;
+                        else if (_matchThresholdSecured)
+                            _matchThreshold = 22000;
                         else
-                            m_MatchThreshold = 15000;
+                            _matchThreshold = 15000;
 
-                        if (m_SpoofThreshold_HighlySecured)
-                            m_SpoofThreshold = 100;
-                        else if (m_SpoofThreshold_Secured)
-                            m_SpoofThreshold = 200;
+                        if (_spoofThresholdHighlySecured)
+                            _spoofThreshold = 100;
+                        else if (_spoofThresholdSecured)
+                            _spoofThreshold = 200;
                         else
-                            m_SpoofThreshold = 1000;   
+                            _spoofThreshold = 1000;   
 
                     } break;
-                case LumiSDKWrapper.LUMI_SENSOR_TYPE.M32X:
+                case LumiSdkWrapper.LumiSensorType.M32X:
                     {
-                        if (m_MatchThreshold_HighlySecured)
-                            m_MatchThreshold = 30762;
-                        else if (m_MatchThreshold_Secured)
-                            m_MatchThreshold = 26368;
+                        if (_matchThresholdHighlySecured)
+                            _matchThreshold = 30762;
+                        else if (_matchThresholdSecured)
+                            _matchThreshold = 26368;
                         else
-                            m_MatchThreshold = 25331;
+                            _matchThreshold = 25331;
 
-                        if (m_SpoofThreshold_HighlySecured)
-                            m_SpoofThreshold = 100;
-                        else if (m_SpoofThreshold_Secured)
-                            m_SpoofThreshold = 200;
+                        if (_spoofThresholdHighlySecured)
+                            _spoofThreshold = 100;
+                        else if (_spoofThresholdSecured)
+                            _spoofThreshold = 200;
                         else
-                            m_SpoofThreshold = 1000;   
+                            _spoofThreshold = 1000;   
 
                     } break;
-                case LumiSDKWrapper.LUMI_SENSOR_TYPE.M31X:
+                case LumiSdkWrapper.LumiSensorType.M31X:
                     {
-                        if (m_MatchThreshold_HighlySecured)
-                            m_MatchThreshold = 31448;
-                        else if (m_MatchThreshold_Secured)
-                            m_MatchThreshold = 26728;
+                        if (_matchThresholdHighlySecured)
+                            _matchThreshold = 31448;
+                        else if (_matchThresholdSecured)
+                            _matchThreshold = 26728;
                         else
-                            m_MatchThreshold = 25668;
+                            _matchThreshold = 25668;
 
-                        if (m_SpoofThreshold_HighlySecured)
-                            m_SpoofThreshold = 100;
-                        else if (m_SpoofThreshold_Secured)
-                            m_SpoofThreshold = 200;
+                        if (_spoofThresholdHighlySecured)
+                            _spoofThreshold = 100;
+                        else if (_spoofThresholdSecured)
+                            _spoofThreshold = 200;
                         else
-                            m_SpoofThreshold = 1000;   
+                            _spoofThreshold = 1000;   
 
                     } break;
                 default:
@@ -1118,56 +1108,56 @@ namespace SDKEnrollApp
             }
         }
 
-        void PopulateSensorComboBox()
+        private void PopulateSensorComboBox()
         {
-            foreach (Sensor sensor in SensorList)
+            foreach (Sensor sensor in _sensorList)
             {
-                SelectSensorComboBox.Items.Add(sensor.SensorType + " " + sensor.strIdentifier);
+                SelectSensorComboBox.Items.Add(sensor.SensorType + " " + sensor.StrIdentifier);
             }
             SelectSensorComboBox.SelectedIndex = 0;
-            m_nSelectedSensorID = 0;
+            _nSelectedSensorId = 0;
 
-            Sensor currentSensor = (Sensor)SensorList[(int)m_nSelectedSensorID];
+            Sensor currentSensor = (Sensor)_sensorList[(int)_nSelectedSensorId];
             string serialNum = "";
             GetSensorSerialNumber(ref serialNum);
-            SetText("You have selected Sensor: " + currentSensor.SensorType + " SN " + serialNum, Blue);
+            SetText("You have selected Sensor: " + currentSensor.SensorType + " SN " + serialNum, _blue);
 
-            LumiSDKWrapper.LumiStatus rc = LumiSDKWrapper.LumiSetDCOptions(currentSensor.handle, m_debugFolder, 0);
+            LumiSdkWrapper.LumiStatus rc = LumiSdkWrapper.LumiSetDCOptions(currentSensor.Handle, _debugFolder, 0);
         }
 
-        void GetSensorSerialNumber(ref string serialNum)
+        private void GetSensorSerialNumber(ref string serialNum)
         {
-            Sensor currentSensor = (Sensor)SensorList[(int)m_nSelectedSensorID];
+            Sensor currentSensor = (Sensor)_sensorList[(int)_nSelectedSensorId];
             switch (currentSensor.SensorType)
             {
-                case LumiSDKWrapper.LUMI_SENSOR_TYPE.VENUS:
+                case LumiSdkWrapper.LumiSensorType.Venus:
                     {
-                        serialNum = currentSensor.strIdentifier.Substring(5);
+                        serialNum = currentSensor.StrIdentifier.Substring(5);
 
                     } break;
-                case LumiSDKWrapper.LUMI_SENSOR_TYPE.V31X:
+                case LumiSdkWrapper.LumiSensorType.V31X:
                     {
-                        serialNum = currentSensor.strIdentifier.Substring(2);
+                        serialNum = currentSensor.StrIdentifier.Substring(2);
 
                     } break;
-                case LumiSDKWrapper.LUMI_SENSOR_TYPE.M300:
+                case LumiSdkWrapper.LumiSensorType.M300:
                     {
-                        serialNum = currentSensor.strIdentifier.Substring(4);
+                        serialNum = currentSensor.StrIdentifier.Substring(4);
 
                     } break;
-                case LumiSDKWrapper.LUMI_SENSOR_TYPE.M100:
+                case LumiSdkWrapper.LumiSensorType.M100:
                     {
-                        serialNum = currentSensor.strIdentifier.Substring(4);
+                        serialNum = currentSensor.StrIdentifier.Substring(4);
 
                     } break;
-                case LumiSDKWrapper.LUMI_SENSOR_TYPE.M31X:
+                case LumiSdkWrapper.LumiSensorType.M31X:
                     {
-                        serialNum = currentSensor.strIdentifier.Substring(2);
+                        serialNum = currentSensor.StrIdentifier.Substring(2);
 
                     } break;
-                case LumiSDKWrapper.LUMI_SENSOR_TYPE.M32X:
+                case LumiSdkWrapper.LumiSensorType.M32X:
                     {
-                        serialNum = currentSensor.strIdentifier.Substring(2);
+                        serialNum = currentSensor.StrIdentifier.Substring(2);
 
                     } break;
                 default:
@@ -1178,54 +1168,54 @@ namespace SDKEnrollApp
 
         private void SelectSensorComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            m_nSelectedSensorID = (uint)(SelectSensorComboBox.SelectedIndex);
-            Sensor currentSensor = (Sensor)SensorList[(int)m_nSelectedSensorID];
+            _nSelectedSensorId = (uint)(SelectSensorComboBox.SelectedIndex);
+            Sensor currentSensor = (Sensor)_sensorList[(int)_nSelectedSensorId];
             string serialNum = "";
             GetSensorSerialNumber(ref serialNum);
-            SetText("You have selected Sensor: " + currentSensor.SensorType + " SN " + serialNum, Blue);
+            SetText("You have selected Sensor: " + currentSensor.SensorType + " SN " + serialNum, _blue);
             SetMatchAndSpoofThresholds();
 
-            LumiSDKWrapper.LumiStatus rc = LumiSDKWrapper.LumiSetDCOptions(currentSensor.handle, m_debugFolder, 0);
+            LumiSdkWrapper.LumiStatus rc = LumiSdkWrapper.LumiSetDCOptions(currentSensor.Handle, _debugFolder, 0);
         }
 
-        private void CaptureWithPDThreadFuction()
+        private void CaptureWithPdThreadFuction()
         {
-            m_nEnrollmentCaptureIndex = -1;
-            CaptureWithPD captureWithPresDetect = new CaptureWithPD(this);
+            _nEnrollmentCaptureIndex = -1;
+            CaptureWithPd captureWithPresDetect = new CaptureWithPd(this);
             captureWithPresDetect.Run();
         }
 
         private void EnrollThreadFuction()
         {
-            m_nEnrollmentCaptureIndex = -1;
+            _nEnrollmentCaptureIndex = -1;
             Enroll enrollWithPresDetect = new Enroll(this);
             enrollWithPresDetect.Run();
         }
 
         private void VerifyThreadFuction()
         {
-            m_nEnrollmentCaptureIndex = -1;
+            _nEnrollmentCaptureIndex = -1;
             Verify verifyWithPresDetect = new Verify(this);
             verifyWithPresDetect.Run();
         }
 
         private void CaptureBtnClick_Click(object sender, EventArgs e)
         {           
-            m_bCancelCapture = false;
-            if (m_bPDCaptureInProcess)
+            _bCancelCapture = false;
+            if (_bPdCaptureInProcess)
             {
-                m_bCancelCapture = true;
+                _bCancelCapture = true;
                 EnableControls();
             }
             else
             {
-                m_bPDCaptureInProcess = true;
-                SetText("Capture in Process", Blue);
+                _bPdCaptureInProcess = true;
+                SetText("Capture in Process", _blue);
                 DisableControls(true);
 
-                m_CaptureWithPDThread = new Thread(CaptureWithPDThreadFuction);
-                m_CaptureWithPDThread.Name = "CaptureWithPDThread";
-                m_CaptureWithPDThread.Start();
+                _captureWithPdThread = new Thread(CaptureWithPdThreadFuction);
+                _captureWithPdThread.Name = "CaptureWithPDThread";
+                _captureWithPdThread.Start();
             }
         }
 
@@ -1234,15 +1224,15 @@ namespace SDKEnrollApp
 
             if (EnableSpoofDetChkBox.Checked == false)
             {
-                m_config.SpoofEnabled = false;
-                m_bSpoofEnabled = false;
-                UpdateConfigXML();
+                _config.SpoofEnabled = false;
+                _bSpoofEnabled = false;
+                UpdateConfigXml();
             }
             else
             {
-                m_config.SpoofEnabled = true;
-                m_bSpoofEnabled = true;
-                UpdateConfigXML();
+                _config.SpoofEnabled = true;
+                _bSpoofEnabled = true;
+                UpdateConfigXml();
             }
         }
 
@@ -1250,15 +1240,15 @@ namespace SDKEnrollApp
         {
             if (SensorTriggerArmedChkBox.Checked == false)
             {
-                m_bSensorTriggerArmed = false;
-                m_config.SensorTriggerArmed = false;
-                UpdateConfigXML();
+                _bSensorTriggerArmed = false;
+                _config.SensorTriggerArmed = false;
+                UpdateConfigXml();
             }
             else
             {
-                m_bSensorTriggerArmed = true;
-                m_config.SensorTriggerArmed = true;
-                UpdateConfigXML();
+                _bSensorTriggerArmed = true;
+                _config.SensorTriggerArmed = true;
+                UpdateConfigXml();
             }
 
         }
@@ -1267,38 +1257,38 @@ namespace SDKEnrollApp
         {
             if (NISTQualityChkBox.Checked == false)
             {
-                m_bNISTQuality = false;
-                m_config.NISTQuality = false;
+                _bNistQuality = false;
+                _config.NistQuality = false;
                 nistPictureBox.Image = null;
-                UpdateConfigXML();
+                UpdateConfigXml();
 
             }
             else
             {
-                m_bNISTQuality = true;
-                m_config.NISTQuality = true;
-                UpdateConfigXML();
+                _bNistQuality = true;
+                _config.NistQuality = true;
+                UpdateConfigXml();
             }
         }
 
         private void LiveBtn_Click(object sender, EventArgs e)
         {
             NISTScoreLabel.Text = "";
-            Sensor currentSensor = (Sensor)SensorList[(int)m_nSelectedSensorID];
+            Sensor currentSensor = (Sensor)_sensorList[(int)_nSelectedSensorId];
 
-            if (m_bCancelLiveMode == false)
+            if (_bCancelLiveMode == false)
             {
-                LumiSDKWrapper.LumiSetLiveMode(currentSensor.handle, 1, m_delLiveMode);
+                LumiSdkWrapper.LumiSetLiveMode(currentSensor.Handle, 1, _delLiveMode);
 
-                m_bCancelLiveMode = true;
-                SetText("Live Mode in Process", Blue);
+                _bCancelLiveMode = true;
+                SetText("Live Mode in Process", _blue);
                 DisableControlsForLiveMode();
             }
             else
             {
-                LumiSDKWrapper.LumiSetLiveMode(currentSensor.handle, 0, m_delLiveMode);
-                m_bCancelLiveMode = false;
-                SetText("Live Mode Stopped", Blue);
+                LumiSdkWrapper.LumiSetLiveMode(currentSensor.Handle, 0, _delLiveMode);
+                _bCancelLiveMode = false;
+                SetText("Live Mode Stopped", _blue);
                 EnableControlsForLiveMode();
             }
         }
@@ -1309,7 +1299,7 @@ namespace SDKEnrollApp
             {
                 case 0: // Capture Tab
                 {
-                    SetText("", Blue);
+                    SetText("", _blue);
                     LumiPictureBox1.Image = null;
                     CaptureBtnClick.Enabled = true;
                     LiveBtn.Enabled = true;
@@ -1325,13 +1315,13 @@ namespace SDKEnrollApp
                     _birthdate.Value = DateTime.Now;
                     CalculateAndSetAgeEnroll();
                     CleanOrCreateDirectory(_fingerprintsPath);
-                    SetText("Digite los datos para enrolamiento", Blue);
+                    SetText("Digite los datos para enrolamiento", _blue);
                     _fingers.Clear();
                     LumiPictureBox1.Image = null;
-                    m_currentSubject.clear();
-                    pictureBox1.Image = defaultImage;
+                    _currentSubject.Clear();
+                    pictureBox1.Image = _defaultImage;
                     nistPictureBox.Image = null;
-                    m_bCancelCapture = false;
+                    _bCancelCapture = false;
                     //DisableEnrollControls();
                 } break;
                 case 2:
@@ -1343,10 +1333,10 @@ namespace SDKEnrollApp
                     _birthdate2.Text = string.Empty;
                     _age2.Text = string.Empty;
                     CleanOrCreateDirectory(_fingerprintsPath);
-                    SetText("Seleccione un usuario para verificación", Blue);
+                    SetText("Seleccione un usuario para verificación", _blue);
                     LumiPictureBox1.Image = null;
                     nistPictureBox.Image = null;
-                    m_bCancelCapture = false;
+                    _bCancelCapture = false;
                     // DisableVerifyControls();   
 
                 } break;
@@ -1355,14 +1345,14 @@ namespace SDKEnrollApp
 
         private void DisableEnrollControls()
         {
-            if (m_bDevicePresent == false)
+            if (_bDevicePresent == false)
             {
                 LiveBtn.Enabled = false;
                 SelectSensorComboBox.Enabled = false;
                 CaptureBtnClick.Enabled = false;
                 tabControl.Enabled = false;
                 LumiPictureBox1.Enabled = false;
-                SetText("Device not found. Please connect device and restart the application", Red);
+                SetText("Device not found. Please connect device and restart the application", _red);
             }
             else
             {
@@ -1398,7 +1388,7 @@ namespace SDKEnrollApp
 
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
         {            
-            int closePointIndex = closesetHotSpot(e);
+            int closePointIndex = ClosesetHotSpot(e);
             int radius = 14;
             int offset = 4;
             Graphics g = pictureBox1.CreateGraphics();
@@ -1407,34 +1397,34 @@ namespace SDKEnrollApp
             SolidBrush brush = new SolidBrush(Color.LawnGreen);            
             Font drawFont = new Font("Arial", 10, FontStyle.Bold);
             
-            SolidBrush Brush2 = new SolidBrush(Color .Red);       
+            SolidBrush brush2 = new SolidBrush(Color .Red);       
             
-            if (prevclosePointIndex == closePointIndex)
+            if (_prevclosePointIndex == closePointIndex)
             {
-               if (draw)
+               if (_draw)
                 {
-                    draw = false;
+                    _draw = false;
                     FingerPos cc = new FingerPos();
                     _fingers.Text = _fingersNames[closePointIndex];
 
-                    g.DrawEllipse(pen, cc.Pos[closePointIndex].x - (radius - offset), cc.Pos[closePointIndex].y - (radius - offset), radius, radius);
-                    g.FillEllipse(brush, cc.Pos[closePointIndex].x - (radius - offset), cc.Pos[closePointIndex].y - (radius - offset), radius, radius);
+                    g.DrawEllipse(pen, cc.Pos[closePointIndex].X - (radius - offset), cc.Pos[closePointIndex].Y - (radius - offset), radius, radius);
+                    g.FillEllipse(brush, cc.Pos[closePointIndex].X - (radius - offset), cc.Pos[closePointIndex].Y - (radius - offset), radius, radius);
 
-                    if (fingerExists(closePointIndex))
-                        g.DrawString("X", drawFont, Brush2, cc.Pos[closePointIndex].x - (radius - offset), cc.Pos[closePointIndex].y - (radius - offset));
+                    if (FingerExists(closePointIndex))
+                        g.DrawString("X", drawFont, brush2, cc.Pos[closePointIndex].X - (radius - offset), cc.Pos[closePointIndex].Y - (radius - offset));
                 }
             }
             else
             {
                 pictureBox1.Invalidate();                
-                prevclosePointIndex = closePointIndex;
-                draw = true;
+                _prevclosePointIndex = closePointIndex;
+                _draw = true;
             }
         }
 
-        private bool fingerExists(int closePointIndex)
+        private bool FingerExists(int closePointIndex)
         {
-            foreach (int finger in m_currentSubject.fingers)
+            foreach (int finger in _currentSubject.Fingers)
             {
                 if (finger == closePointIndex)
                     return true;
@@ -1442,14 +1432,14 @@ namespace SDKEnrollApp
             return false;
         }
 
-        private static int closesetHotSpot(MouseEventArgs e)
+        private static int ClosesetHotSpot(MouseEventArgs e)
         {
             FingerPos cc = new FingerPos();
             double min = 20000;
             int closestPointIndex = 0;
             for (int i = 0; i < 10; i++)
             {
-                double dist = (Math.Pow(e.X - cc.Pos[i].x, 2) + Math.Pow(e.Y - cc.Pos[i].y, 2));
+                double dist = (Math.Pow(e.X - cc.Pos[i].X, 2) + Math.Pow(e.Y - cc.Pos[i].Y, 2));
                 if (dist < min)
                 {
                     min = dist;
@@ -1463,11 +1453,11 @@ namespace SDKEnrollApp
         private void pictureBox1_MouseClick(object sender, MouseEventArgs e)
         {
             CleanFingersPictureBox();
-            SetText("Enroll in Process", Blue);
+            SetText("Enroll in Process", _blue);
             _currentFinger = Array.IndexOf(_fingersNames, _fingers.Text);
             DisableEnrollControls();
-            m_EnrollThread = new Thread(EnrollThreadFuction) {Name = "enrollPDThread"};
-            m_EnrollThread.Start();
+            _enrollThread = new Thread(EnrollThreadFuction) {Name = "enrollPDThread"};
+            _enrollThread.Start();
         }
 
         private void CleanFingersPictureBox()
@@ -1479,8 +1469,8 @@ namespace SDKEnrollApp
 
         private void UpdatePictureBox1()
         {            
-            gImage = (Image)defaultImage.Clone();
-            var g = Graphics.FromImage(gImage);
+            _gImage = (Image)_defaultImage.Clone();
+            var g = Graphics.FromImage(_gImage);
             var pen = new Pen(Color.Red);
             var brush = new SolidBrush(Color.FromArgb(170,255,0,0));
 
@@ -1494,17 +1484,17 @@ namespace SDKEnrollApp
             for (var i = 0; i < _fingersEnrolled.Length; i++)
             {
                 if (!_fingersEnrolled[i]) continue;
-                g.DrawEllipse(pen, cc.Pos[i].x - (radius - offset), cc.Pos[i].y - (radius - offset), radius, radius);
-                g.FillEllipse(brush, cc.Pos[i].x - (radius - offset), cc.Pos[i].y - (radius - offset), radius, radius);
-                g.DrawString("E", drawFont, brush3, cc.Pos[i].x - (radius - offset), cc.Pos[i].y - (radius - offset));
+                g.DrawEllipse(pen, cc.Pos[i].X - (radius - offset), cc.Pos[i].Y - (radius - offset), radius, radius);
+                g.FillEllipse(brush, cc.Pos[i].X - (radius - offset), cc.Pos[i].Y - (radius - offset), radius, radius);
+                g.DrawString("E", drawFont, brush3, cc.Pos[i].X - (radius - offset), cc.Pos[i].Y - (radius - offset));
 
             }
-            pictureBox1.Image = gImage;
+            pictureBox1.Image = _gImage;
         }
         
         private void EnrollFinished()
         {
-            if (m_bComTimeOut) return;
+            if (_bComTimeOut) return;
             EnableEnrollControls();
             _fingersEnrolled[_currentFinger] = true;
             //UpdateExistingUserComboBox();
@@ -1517,7 +1507,7 @@ namespace SDKEnrollApp
             try
             {
                 ////// Get the minutia list
-                ANSI378TemplateHelper templateHelper = new ANSI378TemplateHelper(template, (int)templateSize);
+                Ansi378TemplateHelper templateHelper = new Ansi378TemplateHelper(template, (int)templateSize);
                 Minutiae[] minutiaeList = templateHelper.GetMinutiaeList();
                 ////// Draw minutia on capturedImage.Image
                 Graphics g = Graphics.FromImage(bmp);// this.LumiPictureBox1.CreateGraphics();
@@ -1528,7 +1518,7 @@ namespace SDKEnrollApp
 
                 foreach (var minutiae in minutiaeList)
                 {
-                    if (minutiae.nType == 1)
+                    if (minutiae.NType == 1)
                     {
                         // Line ending minutiae
                         pen2 = new Pen(Color.Red);
@@ -1541,13 +1531,13 @@ namespace SDKEnrollApp
                         brush = new SolidBrush(Color.Green);
                     }
 
-                    int nX = minutiae.nX;
-                    int nY = minutiae.nY;
+                    int nX = minutiae.NX;
+                    int nY = minutiae.NY;
 
                     g.DrawEllipse(pen2, nX - 3, nY - 3, 6, 6);
                     g.FillEllipse(brush, nX - 3, nY - 3, 6, 6);
 
-                    double nR = minutiae.nRotAngle;
+                    double nR = minutiae.NRotAngle;
                     int nX1;
                     int nY1;
 
@@ -1582,19 +1572,19 @@ namespace SDKEnrollApp
                         bm.Save(save.FileName, ImageFormat.Bmp);
 
                         // Save image full size without minutiae
-                        Byte[] tmpImageBuffer = new Byte[m_nWidth * m_nHeight * 3];
+                        Byte[] tmpImageBuffer = new Byte[_nWidth * _nHeight * 3];
                         int j = 0;
-                        for (int i = 0; i < (m_nWidth * m_nHeight); i++)
+                        for (int i = 0; i < (_nWidth * _nHeight); i++)
                         {
-                            tmpImageBuffer[j++] = m_bRawImageBuffer[i];
-                            tmpImageBuffer[j++] = m_bRawImageBuffer[i];
-                            tmpImageBuffer[j++] = m_bRawImageBuffer[i];
+                            tmpImageBuffer[j++] = _bRawImageBuffer[i];
+                            tmpImageBuffer[j++] = _bRawImageBuffer[i];
+                            tmpImageBuffer[j++] = _bRawImageBuffer[i];
                         }
                         String rawFileName = save.FileName.Replace(".bmp", "_NoMinutiae.bmp");
                         
-                        Bitmap bmp = new Bitmap((int)m_nWidth, (int)m_nHeight, PixelFormat.Format24bppRgb);
+                        Bitmap bmp = new Bitmap((int)_nWidth, (int)_nHeight, PixelFormat.Format24bppRgb);
                         BitmapData bmpData = bmp.LockBits(
-                                             new Rectangle(0, 0, (int)m_nWidth, (int)m_nHeight),
+                                             new Rectangle(0, 0, (int)_nWidth, (int)_nHeight),
                                              ImageLockMode.WriteOnly, bmp.PixelFormat);
                         Marshal.Copy(tmpImageBuffer, 0, bmpData.Scan0, tmpImageBuffer.Length);
                         bmp.Save(rawFileName, ImageFormat.Bmp);
@@ -1602,14 +1592,14 @@ namespace SDKEnrollApp
                         // Save raw byte data from image
                         String rawByteFileName = save.FileName.Replace(".bmp", ".bin");
                         BinaryWriter binaryWriter = new BinaryWriter(File.OpenWrite(rawByteFileName));
-                        binaryWriter.Write(m_bRawImageBuffer);
+                        binaryWriter.Write(_bRawImageBuffer);
                         binaryWriter.Flush();
                         binaryWriter.Close();
 
                         // Save raw byte data from fingerprint template
                         String rawByteTmpName = save.FileName.Replace(".bmp", "_tmp.bin");
                         BinaryWriter binaryWriter2 = new BinaryWriter(File.OpenWrite(rawByteTmpName));
-                        binaryWriter2.Write(m_bTemplateBuffer);
+                        binaryWriter2.Write(_bTemplateBuffer);
                         binaryWriter2.Flush();
                         binaryWriter2.Close();
                     }
@@ -1624,58 +1614,58 @@ namespace SDKEnrollApp
         private void SetConvenientSpoofThresholds()
         {
 
-            Sensor currentSensor = (Sensor)SensorList[(int)m_nSelectedSensorID];
-            LumiSDKWrapper.LumiStatus rc;
-            LumiSDKWrapper.LUMI_VERSION versInfo = new LumiSDKWrapper.LUMI_VERSION();
+            Sensor currentSensor = (Sensor)_sensorList[(int)_nSelectedSensorId];
+            LumiSdkWrapper.LumiStatus rc;
+            LumiSdkWrapper.LumiVersion versInfo = new LumiSdkWrapper.LumiVersion();
 
             switch (currentSensor.SensorType)
             {
-                case LumiSDKWrapper.LUMI_SENSOR_TYPE.VENUS:
+                case LumiSdkWrapper.LumiSensorType.Venus:
                     {
-                        uint Handle = 0;
-                        Handle = currentSensor.handle;
-                        rc = LumiSDKWrapper.LumiGetVersionInfo(Handle, ref versInfo);
+                        uint handle = 0;
+                        handle = currentSensor.Handle;
+                        rc = LumiSdkWrapper.LumiGetVersionInfo(handle, ref versInfo);
                         uint version = Convert.ToUInt32(versInfo.fwrVersion);
                         uint deviceType = Convert.ToUInt32(versInfo.tnsVersion);
 
                         if (version >= 21304)
                         {
-                            m_SpoofThreshold = 1050;
+                            _spoofThreshold = 1050;
                         }
                         else if (version <= 9538)
                         {
                             if (deviceType == 61)
                             {
-                                m_SpoofThreshold = 1050;
+                                _spoofThreshold = 1050;
 
                             }
                             else
                             {
-                                m_SpoofThreshold = 1000;
+                                _spoofThreshold = 1000;
 
                             }
                         }
 
                     } break;
-                case LumiSDKWrapper.LUMI_SENSOR_TYPE.V31X:
+                case LumiSdkWrapper.LumiSensorType.V31X:
                     {
-                        m_SpoofThreshold = 1050;
+                        _spoofThreshold = 1050;
                     } break;
-                case LumiSDKWrapper.LUMI_SENSOR_TYPE.M300:
+                case LumiSdkWrapper.LumiSensorType.M300:
                     {
-                        m_SpoofThreshold = 1000;
+                        _spoofThreshold = 1000;
                     } break;
-                case LumiSDKWrapper.LUMI_SENSOR_TYPE.M100:
+                case LumiSdkWrapper.LumiSensorType.M100:
                     {
-                        m_SpoofThreshold = 1000;
+                        _spoofThreshold = 1000;
                     } break;
-                case LumiSDKWrapper.LUMI_SENSOR_TYPE.M31X:
+                case LumiSdkWrapper.LumiSensorType.M31X:
                     {
-                        m_SpoofThreshold = 1000;
+                        _spoofThreshold = 1000;
                     } break;
-                case LumiSDKWrapper.LUMI_SENSOR_TYPE.M32X:
+                case LumiSdkWrapper.LumiSensorType.M32X:
                     {
-                        m_SpoofThreshold = 1000;
+                        _spoofThreshold = 1000;
                     } break;
                 default:
                     {
@@ -1685,49 +1675,49 @@ namespace SDKEnrollApp
 
         private void SetSecureMatchThresholds()
         {
-            Sensor currentSensor = (Sensor)SensorList[(int)m_nSelectedSensorID];
-            LumiSDKWrapper.LumiStatus rc;
-            LumiSDKWrapper.LUMI_VERSION versInfo = new LumiSDKWrapper.LUMI_VERSION();
+            Sensor currentSensor = (Sensor)_sensorList[(int)_nSelectedSensorId];
+            LumiSdkWrapper.LumiStatus rc;
+            LumiSdkWrapper.LumiVersion versInfo = new LumiSdkWrapper.LumiVersion();
 
             switch (currentSensor.SensorType)
             {
-                case LumiSDKWrapper.LUMI_SENSOR_TYPE.VENUS:
+                case LumiSdkWrapper.LumiSensorType.Venus:
                     {
-                        uint Handle = 0;
-                        Handle = currentSensor.handle;
-                        rc = LumiSDKWrapper.LumiGetVersionInfo(Handle, ref versInfo);
+                        uint handle = 0;
+                        handle = currentSensor.Handle;
+                        rc = LumiSdkWrapper.LumiGetVersionInfo(handle, ref versInfo);
                         uint version = Convert.ToUInt32(versInfo.fwrVersion);
                         uint deviceType = Convert.ToUInt32(versInfo.tnsVersion);
 
                         if (version >= 21304)
                         {
-                            m_MatchThreshold = 22418;
+                            _matchThreshold = 22418;
                         }
                         else if (version <= 9538)
                         {
-                            m_MatchThreshold = deviceType == 61 ? (uint) 27520 : (uint) 22418;
+                            _matchThreshold = deviceType == 61 ? (uint) 27520 : (uint) 22418;
                         }
 
                     } break;
-                case LumiSDKWrapper.LUMI_SENSOR_TYPE.V31X:
+                case LumiSdkWrapper.LumiSensorType.V31X:
                     {
-                        m_MatchThreshold = 22418;
+                        _matchThreshold = 22418;
                     } break;
-                case LumiSDKWrapper.LUMI_SENSOR_TYPE.M300:
+                case LumiSdkWrapper.LumiSensorType.M300:
                     {
-                        m_MatchThreshold = 27520;
+                        _matchThreshold = 27520;
                     } break;
-                case LumiSDKWrapper.LUMI_SENSOR_TYPE.M100:
+                case LumiSdkWrapper.LumiSensorType.M100:
                     {
-                        m_MatchThreshold = 27520;
+                        _matchThreshold = 27520;
                     } break;
-                case LumiSDKWrapper.LUMI_SENSOR_TYPE.M31X:
+                case LumiSdkWrapper.LumiSensorType.M31X:
                     {
-                        m_MatchThreshold = 27520;
+                        _matchThreshold = 27520;
                     } break;
-                case LumiSDKWrapper.LUMI_SENSOR_TYPE.M32X:
+                case LumiSdkWrapper.LumiSensorType.M32X:
                     {
-                        m_MatchThreshold = 27520;
+                        _matchThreshold = 27520;
                     } break;
                 default:
                     {
@@ -1739,16 +1729,16 @@ namespace SDKEnrollApp
         {           
            if (SpoofHighlySecure.Checked == false)
            {        
-               m_SpoofThreshold_HighlySecured = false;
-               m_config.SpoofHighlySecured = false;
-               UpdateConfigXML();
+               _spoofThresholdHighlySecured = false;
+               _config.SpoofHighlySecured = false;
+               UpdateConfigXml();
            }
            else
            {            
-               m_SpoofThreshold_HighlySecured = true;
-               m_config.SpoofHighlySecured = true;
+               _spoofThresholdHighlySecured = true;
+               _config.SpoofHighlySecured = true;
                SetMatchAndSpoofThresholds();
-               UpdateConfigXML();
+               UpdateConfigXml();
            }
         }
 
@@ -1756,16 +1746,16 @@ namespace SDKEnrollApp
         {            
             if (SpoofSecure.Checked == false)
             {         
-                m_SpoofThreshold_Secured = false;
-                m_config.SpoofSecure = false;
-                UpdateConfigXML();
+                _spoofThresholdSecured = false;
+                _config.SpoofSecure = false;
+                UpdateConfigXml();
             }
             else
             {             
-                m_SpoofThreshold_Secured = true;
-                m_config.SpoofSecure = true;
+                _spoofThresholdSecured = true;
+                _config.SpoofSecure = true;
                 SetMatchAndSpoofThresholds();
-                UpdateConfigXML();
+                UpdateConfigXml();
             }
         }
 
@@ -1773,16 +1763,16 @@ namespace SDKEnrollApp
         {           
             if (SpoofConvenient.Checked == false)
             {         
-                m_SpoofThreshold_Convenient = false;
-                m_config.SpoofConvenient = false;
-                UpdateConfigXML();
+                _spoofThresholdConvenient = false;
+                _config.SpoofConvenient = false;
+                UpdateConfigXml();
             }
             else
             {             
-                m_SpoofThreshold_Convenient = true;
-                m_config.SpoofConvenient = true;
+                _spoofThresholdConvenient = true;
+                _config.SpoofConvenient = true;
                 SetMatchAndSpoofThresholds();
-                UpdateConfigXML();
+                UpdateConfigXml();
             }
         }
 
@@ -1790,16 +1780,16 @@ namespace SDKEnrollApp
         {
             if (MatchHighlySecured.Checked == false)
             {
-                m_MatchThreshold_HighlySecured = false;
-                m_config.MatchHighlySecure = false;
-                UpdateConfigXML();
+                _matchThresholdHighlySecured = false;
+                _config.MatchHighlySecure = false;
+                UpdateConfigXml();
             }
             else
             {
-                m_MatchThreshold_HighlySecured = true;
-                m_config.MatchHighlySecure = true;
+                _matchThresholdHighlySecured = true;
+                _config.MatchHighlySecure = true;
                 SetMatchAndSpoofThresholds();
-                UpdateConfigXML();
+                UpdateConfigXml();
             }
         }
 
@@ -1807,16 +1797,16 @@ namespace SDKEnrollApp
         {            
             if (MatchSecure.Checked == false)
             {         
-                m_MatchThreshold_Secured = false;
-                m_config.MatchSecure = false;
-                UpdateConfigXML();
+                _matchThresholdSecured = false;
+                _config.MatchSecure = false;
+                UpdateConfigXml();
             }
             else
             {             
-                m_MatchThreshold_Secured = true;
-                m_config.MatchSecure = true;
+                _matchThresholdSecured = true;
+                _config.MatchSecure = true;
                 SetMatchAndSpoofThresholds();
-                UpdateConfigXML();
+                UpdateConfigXml();
             }
         }
 
@@ -1824,16 +1814,16 @@ namespace SDKEnrollApp
         {            
             if (MatchConvenient.Checked == false)
             {         
-                m_MatchThreshold_Convenient = false;
-                m_config.MatchConvenient = false;
-                UpdateConfigXML();
+                _matchThresholdConvenient = false;
+                _config.MatchConvenient = false;
+                UpdateConfigXml();
             }
             else
             {             
-                m_MatchThreshold_Convenient = true;
-                m_config.MatchConvenient = true;
+                _matchThresholdConvenient = true;
+                _config.MatchConvenient = true;
                 SetMatchAndSpoofThresholds();
-                UpdateConfigXML();
+                UpdateConfigXml();
             }
         }
 
@@ -2244,11 +2234,11 @@ namespace SDKEnrollApp
 
         private void _verificar_Click(object sender, EventArgs e)
         {
-            SetText("Verificación en proceso", Blue);
+            SetText("Verificación en proceso", _blue);
             _currentFinger = Array.IndexOf(_fingersNames, _fingers.Text);
             DisableEnrollControls();
-            m_VerifyThread = new Thread(VerifyThreadFuction) { Name = "verifyPDThread" };
-            m_VerifyThread.Start();
+            _verifyThread = new Thread(VerifyThreadFuction) { Name = "verifyPDThread" };
+            _verifyThread.Start();
         }
 
         private void ValidateMatch()
@@ -2297,11 +2287,6 @@ namespace SDKEnrollApp
         private void _setUmbral_Click(object sender, EventArgs e)
         {
             _numberUmbral = Convert.ToInt32(_umbral.Text);
-        }
-
-        private void CleanVarifyTab()
-        {
-
         }
     }
 }

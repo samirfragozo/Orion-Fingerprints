@@ -12,3 +12,4 @@ F:\Usuarios\David Ortiz\Desktop\SDK2\bin\LumiInOpAPIWrapper.dll
 F:\Usuarios\David Ortiz\Desktop\SDK2\bin\LumiInOpAPIWrapper.pdb
 F:\Usuarios\David Ortiz\Desktop\SDK2\examples\SDKEnrollApp\LumiInOpAPIWrapper\LumiInOpAPIWrapper\obj\Debug\LumiInOpAPIWrapper.dll
 F:\Usuarios\David Ortiz\Desktop\SDK2\examples\SDKEnrollApp\LumiInOpAPIWrapper\LumiInOpAPIWrapper\obj\Debug\LumiInOpAPIWrapper.pdb
+F:\Usuarios\David Ortiz\Desktop\SDK2\examples\SDKEnrollApp\LumiInOpAPIWrapper\LumiInOpAPIWrapper\obj\Debug\LumiInOpAPIWrapper.csprojResolveAssemblyReference.cache

@@ -20,7 +20,7 @@ namespace SDKEnrollApp
     {
         public bool SpoofEnabled;
         public bool SensorTriggerArmed;
-        public bool NISTQuality;
+        public bool NistQuality;
         public bool SpoofSecure;
         public bool SpoofHighlySecured;
         public bool SpoofConvenient;
